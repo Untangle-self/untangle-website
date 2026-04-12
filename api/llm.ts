@@ -36,16 +36,24 @@ Return JSON:
 
   const data = await response.json();
 
-  const text = data.choices?.[0]?.message?.content;
+ const text = data.choices?.[0]?.message?.content || "";
 
+// Extract JSON safely
+const jsonMatch = text.match(/\{[\s\S]*\}/);
+
+if (jsonMatch) {
   try {
-    const parsed = JSON.parse(text);
-    res.status(200).json(parsed);
-  } catch {
-    res.status(200).json({
-      reflection: text,
-      deepening: "",
-      untangle: "",
-    });
+    const parsed = JSON.parse(jsonMatch[0]);
+    return res.status(200).json(parsed);
+  } catch (e) {
+    console.error("JSON parse failed:", e);
   }
+}
+
+// fallback (never empty now)
+return res.status(200).json({
+  reflection: text,
+  deepening: text,
+  untangle: text,
+});
 }
