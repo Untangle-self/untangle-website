@@ -57,20 +57,21 @@ if (jsonMatch) {
   try {
     const parsed = JSON.parse(jsonMatch[0]);
 
-return res.status(200).json({
-  reflection: parsed.reflection || "It feels heavier than just a passing mood.",
-  deepening: parsed.deepening || "There’s something underneath this that hasn’t settled yet.",
-  untangle: parsed.untangle || "It’s not just sadness — something unresolved is making it stay."
-});
+    return res.status(200).json({
+      reflection: parsed.reflection || "It feels heavier than just a passing mood.",
+      deepening: parsed.deepening || "There’s something underneath this that hasn’t settled yet.",
+      untangle: parsed.untangle || "It’s not just sadness — something unresolved is making it stay."
+    });
+
   } catch (e) {
     console.error("JSON parse failed:", e);
   }
 }
 
-// fallback (never empty now)
+// fallback (never empty)
 return res.status(200).json({
-  reflection: "test reflection",
-  deepening: "test deepening",
-  untangle: "test untangle",
+  reflection: text || "Something feels off, even if it’s hard to name.",
+  deepening: text || "There’s more underneath this than what’s immediately visible.",
+  untangle: text || "It’s not just what’s happening — it’s how it’s sitting with you."
 });
 }
