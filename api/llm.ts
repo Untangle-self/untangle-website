@@ -1,3 +1,5 @@
+console.log("API HIT V2");
+
 export default async function handler(req, res) {
   const { input } = req.body;
 
@@ -67,8 +69,8 @@ return res.status(200).json({
 
 // fallback (never empty now)
 return res.status(200).json({
-  reflection: text,
-  deepening: text,
-  untangle: text,
+  reflection: "test reflection",
+  deepening: "test deepening",
+  untangle: "test untangle",
 });
 }
