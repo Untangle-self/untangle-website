@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+:root {
+  --color-cream: #F5F0E8;
+  --color-cream-dark: #EDE6D6;
+  --color-sage: #7A8C6E;
+  --color-sage-light: #9BAA8C;
+  --color-olive: #4A5240;
+  --color-sand: #C9B99A;
+  --color-text-primary: #2C2C2C;
+  --color-text-muted: #7A7A7A;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'DM Sans', system-ui, sans-serif; }

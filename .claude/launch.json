@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Untangle Dev Server",
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["/Users/barathiss/untangle/.claude/run-dev.sh"],
+      "port": 5173
+    }
+  ]
+}
