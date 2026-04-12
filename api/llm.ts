@@ -20,10 +20,20 @@ Generate:
 2. deepening (1–2 lines)
 3. untangle (insight)
 
-Keep it human, specific, non-generic.
-Return JSON:
-{ reflection, deepening, untangle }
-          `,
+STRICT RULES:
+- Do NOT return empty strings
+- Each field MUST contain meaningful text
+- Be specific to the user's input
+- No generic advice
+- No placeholders
+
+Return ONLY valid JSON:
+{
+  "reflection": "string",
+  "deepening": "string",
+  "untangle": "string"
+}
+`,
         },
         {
           role: "user",
