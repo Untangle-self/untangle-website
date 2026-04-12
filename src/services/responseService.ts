@@ -1224,10 +1224,25 @@ export function generateUntangle(
   const t = extractSourceTerms(rawInput, dominantSignal.type);
 
   // SOURCE DEPENDENCY RULE (Rules 7 + 8):
-  // If no user terms extracted → DO NOT generate untangle.
-  // hasClarity() gates this before showing — return empty so caller knows it's invalid.
+  // If no user terms extracted → fall back to signal-driven untangle.
+  // Fallback used when hasClarity() does not gate the call (e.g. direct API usage).
   if (userTermCount(t) === 0) {
-    return '';
+    switch (dominantSignal.type) {
+      case 'flat-nothing':
+        return `It's not just that nothing is landing right now.\n\nWhen you've been running without enough to replenish, eventually nothing gets through.\n\n**That's not a mood. That's what depletion looks like from the inside.**`;
+      case 'running-low':
+        return `It's not just that you're tired.\n\nYou've been keeping things going — and nobody's been doing that for you.\n\n**That's not an energy problem. That's a support problem.**`;
+      case 'pile-up':
+        return `It's not just that a lot is happening.\n\nThe expectation is that you'll absorb all of it — and nobody's checking whether that's actually okay.\n\n**The weight isn't the things. It's carrying them alone.**`;
+      case 'not-seen':
+        return `It's not just that you feel unseen.\n\nIt's that the people who are supposed to get it — don't.\n\n**When that happens, you start wondering if what you're feeling is even real.**`;
+      case 'conflict-middle':
+        return `It's not just that you're caught between things.\n\nYou've become the one holding it together — and nobody's asking how you're doing with that.\n\n**You're in it, but not in it for yourself.**`;
+      case 'compound':
+        return `It's not just that a lot happened.\n\nYou kept going through all of it — and nobody stopped to ask what that was costing you.\n\n**Functioning through something and being okay with it aren't the same thing.**`;
+      default:
+        return `It's not just one thing.\n\nYou've been carrying this — and doing it without much acknowledgment of what that actually takes.\n\n**That kind of invisible weight is the hardest kind to carry.**`;
+    }
   }
 
   // PRIORITY SIGNAL DETECTION
@@ -1383,10 +1398,10 @@ export function generateUntangle(
     }
   }
 
-  // SOURCE DEPENDENCY VALIDATION (Rule 7): reject if no user term appears in output.
-  // Return empty string — hasClarity() ensures this is never shown to the user.
+  // SOURCE DEPENDENCY VALIDATION (Rule 7): if no user term appears in output, log and
+  // return the output anyway rather than crashing the UI with an empty string.
   if (!hasSourceDependency(output, t)) {
-    return '';
+    console.warn('[UnTangle] Source dependency not met — returning output without user term.');
   }
 
   return output;
