@@ -32,21 +32,7 @@ export default function App() {
 
   const { advanceStep } = useFlowEngine();
 
-  // ✅ Safe untangle reveal (ONLY used later, not immediately)
-  /*const revealUntangle = useCallback((text: string) => {
-    if (!text) return;
-
-    setTimeout(() => {
-      setTyping(true);
-      setTimeout(() => {
-        setTyping(false);
-        setUntangleReveal(text);
-        setStep('user-untangle');
-      }, 1200);
-    }, 600);
-  }, [setTyping, setUntangleReveal, setStep]); */
-
-  // ✅ MAIN FLOW (FIXED)
+  // MAIN FLOW
   const handleFreeSubmit = useCallback(async (userText: string) => {
     if (!userText.trim()) return;
 
@@ -59,39 +45,35 @@ export default function App() {
 
       setTyping(false);
 
-      // ✅ 1. Reflection
+      // 1. Reflection
       addMessage({
         role: 'app',
-        text: response?.reflection || "Something feels off, even if it's hard to name."
+        text:
+          response?.reflection ||
+          "Something feels off, even if it's hard to name.",
       });
 
-      // ✅ 2. Deepening (AFTER reflection, with pause)
+      // 2. Deepening → move into interaction step
       if (response?.deepening) {
         setTimeout(() => {
           addMessage({
             role: 'app',
-            text: response.deepening
+            text: response.deepening,
           });
 
-          // 👉 IMPORTANT: we move step here (not untangle)
           setStep('user-deepening');
-
         }, 600);
       }
 
-      // ❌ DO NOT TRIGGER UNTANGLE HERE
-      // ❌ This was breaking your flow
-      // if (response?.untangle) {
-      //   revealUntangle(response.untangle);
-      // }
+      // ❌ DO NOT trigger untangle here
 
     } catch (err) {
-      console.error("LLM failed:", err);
+      console.error('LLM failed:', err);
       setTyping(false);
 
       addMessage({
         role: 'app',
-        text: "Something didn’t land right. Try again."
+        text: "Something didn’t land right. Try again.",
       });
     }
   }, [addMessage, setTyping, setStep]);
@@ -132,7 +114,7 @@ export default function App() {
           onDemoSubmit={() => {
             addMessage({
               role: 'user',
-              text: "I feel off and I don’t know why"
+              text: "I feel off and I don’t know why",
             });
             handleFreeSubmit("I feel off and I don’t know why");
           }}
@@ -147,6 +129,33 @@ export default function App() {
 
       <div style={{ position: 'relative', zIndex: 1, height: '100%' }}>
         <ChatThread />
+
+        {/* ✅ SIMPLE CHIP INTERACTION LAYER */}
+        {currentStep === 'user-deepening' && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 20,
+              left: 0,
+              right: 0,
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '10px',
+            }}
+          >
+            <button onClick={() => advanceStep(['yeah that fits'])}>
+              yeah… that fits
+            </button>
+
+            <button onClick={() => advanceStep(['not really'])}>
+              not really
+            </button>
+
+            <button onClick={() => setStep('user-reflection')}>
+              something else
+            </button>
+          </div>
+        )}
 
         <AnimatePresence>
           {untangleReveal && (
