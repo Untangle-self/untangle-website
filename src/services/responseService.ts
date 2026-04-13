@@ -1,6 +1,10 @@
 // responseService.ts
 
-// SIMPLIFIED responseService.ts (safe version)
+// ✅ minimal, safe, build-proof version
+
+export type PathAContent = any;
+export type PathBContent = any;
+export type PathCContent = any;
 
 export async function generateUntangleResponse(userText: string) {
   try {
@@ -22,10 +26,7 @@ export async function generateUntangleResponse(userText: string) {
       screen4Options: [],
       paths: {},
     };
-
-  } catch (err) {
-    console.error("LLM failed:", err);
-
+  } catch {
     return {
       reflection: "Something feels off.",
       deepening: "There’s more under this.",

@@ -1,11 +1,11 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback } from 'react'; //useEffect, useState, 
 import { callLLM } from './services/llmService.ts';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence} from 'framer-motion'; // , motion 
 import { BackgroundCanvas } from './components/layout/BackgroundCanvas';
 import { StartScreen } from './components/layout/StartScreen';
 import { UnTangleReveal } from './components/layout/UnTangleReveal';
 import { ChatThread } from './components/chat/ChatThread';
-import { CTAButton } from './components/controls/CTAButton';
+// import { CTAButton } from './components/controls/CTAButton';
 import { SummaryPage } from './components/summary/SummaryPage';
 import { ClaritySnapshot } from './components/summary/ClaritySnapshot';
 import { useConversationStore } from './store/conversationStore';
@@ -24,28 +24,28 @@ import { useFlowEngine } from './hooks/useFlowEngine';
 export default function App() {
   const {
     currentStep,
-    isTyping,
+    // isTyping,
     addMessage,
     setTyping,
     setStep,
     untangleReveal,
     setUntangleReveal,
-    reset,
+    // reset,
   } = useConversationStore();
 
   const { advanceStep } = useFlowEngine();
 
-  const [controlsReady, setControlsReady] = useState(false);
+  //const [controlsReady, setControlsReady] = useState(false);
 
   // Controls timing
-  useEffect(() => {
+  /*useEffect(() => {
     if (isTyping) {
       setControlsReady(false);
       return;
     }
     const t = setTimeout(() => setControlsReady(true), 500);
     return () => clearTimeout(t);
-  }, [isTyping]);
+  }, [isTyping]); */
 
   // Reveal untangle safely
   const revealUntangle = useCallback((text: string) => {
