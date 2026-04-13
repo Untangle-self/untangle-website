@@ -1,28 +1,68 @@
 export default async function handler(req, res) {
-  console.log("API HIT V3");
+try {
+const { input } = req.body;
 
-  try {
-    const { generateUntangleResponse } = await import(
-      "../services/responseService"
-    );
+const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+  },
+  body: JSON.stringify({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: `
 
-    console.log("IMPORT OK");
+Return STRICT JSON:
+{
+“reflection”: “1 line”,
+“deepening”: “1–2 lines”,
+“untangle”: “insight”
+}
+No empty fields.
+No advice.
+`,
+},
+{
+role: “user”,
+content: input,
+},
+],
+temperature: 0.7,
+}),
+});
 
-    const { input } = req.body;
+const data = await response.json();
+const text = data.choices?.[0]?.message?.content || "";
 
-    const response = await generateUntangleResponse(input);
+const jsonMatch = text.match(/\{[\s\S]*\}/);
 
-    console.log("RESPONSE OK", response);
+if (jsonMatch) {
+  const parsed = JSON.parse(jsonMatch[0]);
 
-    return res.status(200).json(response);
+  return res.status(200).json({
+    reflection: parsed.reflection || "Something feels off.",
+    deepening: parsed.deepening || "",
+    untangle: parsed.untangle || "",
+  });
+}
 
-  } catch (e) {
-    console.error("ERROR STEP:", e);
+return res.status(200).json({
+  reflection: text || "Something feels off.",
+  deepening: "",
+  untangle: "",
+});
 
-    return res.status(500).json({
-      error: "FAIL",
-      step: "check logs",
-      message: String(e),
-    });
-  }
+} catch (err) {
+console.error(“LLM API error:”, err);
+
+return res.status(500).json({
+  reflection: "Something didn’t land right.",
+  deepening: "",
+  untangle: "",
+});
+
+}
 }
