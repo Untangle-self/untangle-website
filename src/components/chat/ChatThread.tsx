@@ -21,8 +21,8 @@ export function ChatThread() {
     >
       {messages.map((msg) => (
         <div key={msg.id} style={{ marginBottom: '16px' }}>
-          
-          {/* ✅ Message /}
+
+          {/* Message /}
           <div
             style={{
               padding: '10px 14px',
@@ -30,12 +30,13 @@ export function ChatThread() {
               background: msg.role === 'user' ? '#dbeafe' : '#ffffff',
               alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
               maxWidth: '70%',
+              color: '#000',
             }}
           >
-            {msg.text}
+            {msg.text || ''}
           </div>
 
-          {/ ✅ Chips */}
+          {/ Chips */}
           {msg.chips && (
             <div
               style={{
@@ -56,6 +57,7 @@ export function ChatThread() {
               ))}
             </div>
           )}
+
         </div>
       ))}
 
