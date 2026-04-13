@@ -32,8 +32,11 @@ export interface Message {
   text: string;
   label?: string;
 
-  // 🔥 ADD THIS
-  chips?: ChipOption[];
+  // ✅ ADD THIS BLOCK
+  chips?: {
+    id: string;
+    label: string;
+  }[];
 }
 
 export type ControlConfig =
