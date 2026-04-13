@@ -856,13 +856,43 @@ export function cleanGenericPhrases(text: string): string {
  * Reflection — anchors user in their situation.
  * Driven by dominantSignal (PRIMARY rule). Does NOT copy signal verbatim.
  */
-export function generateReflection(
+export async function generateReflection(
   _pattern: PatternType,
   _signal: string,
   _context: Context,
   dominantSignal: DominantSignal,
   rawInput: string,
-): string {
+): Promise<string> {
+  // ── LLM path — try first, fall through to templates on any failure ──────────
+  try {
+    const { callLLM } = await import('./llmAdapter');
+    const rt0 = extractReflectionTerms(rawInput, dominantSignal.type);
+    const prompt = [
+      `You are writing the reflection line in an emotional conversation.`,
+      ``,
+      `User's exact words: "${rawInput}"`,
+      `Signal type: ${dominantSignal.type}`,
+      rt0.feeling.fromUser ? `Feeling word they used: ${rt0.feeling.value}` : '',
+      rt0.target.fromUser  ? `Context they named: ${rt0.target.value}` : '',
+      ``,
+      `Write exactly ONE sentence that mirrors back the specific quality of what they described.`,
+      `This is mirroring, not interpretation — name what they said, not what it means.`,
+      ``,
+      `Rules:`,
+      `— Use their feeling word or a close variation — do not swap it for a synonym`,
+      `— Second person only ("you", "your")`,
+      `— No advice, no questions, no reassurance`,
+      `— Banned phrases: "that makes sense", "that sounds", "I hear you", "I understand", "it's okay", "you're not alone"`,
+      `— 12–22 words maximum`,
+      `— Output ONLY the sentence. No quotes, no label, no preamble.`,
+    ].filter(Boolean).join('\n');
+    const result = await callLLM(prompt);
+    if (result) return result;
+  } catch {
+    // LLM unavailable or returned empty — fall through to template logic below
+  }
+
+  // ── Template fallback ────────────────────────────────────────────────────────
   // Extract user's feeling + target — always first, before any vague check.
   // A feeling word is a valid signal on its own; it must never be discarded.
   const rt = extractReflectionTerms(rawInput, dominantSignal.type);
@@ -981,13 +1011,44 @@ export function generateReflection(
  * ONE line only. No insight, no resolution, no question.
  * Tone: grounded, simple, easy to read in an overwhelmed state.
  */
-export function generateDeepening(
+export async function generateDeepening(
   _pattern: PatternType,
   _signal: string,
   _context: Context,
   dominantSignal: DominantSignal,
   rawInput: string,
-): string {
+): Promise<string> {
+  // ── LLM path ─────────────────────────────────────────────────────────────────
+  try {
+    const { callLLM } = await import('./llmAdapter');
+    const rt0 = extractReflectionTerms(rawInput, dominantSignal.type);
+    const prompt = [
+      `You are writing the deepening line in an emotional conversation.`,
+      `The reflection has already acknowledged what the user named.`,
+      `The deepening follows the same emotional thread deeper — it does not redirect or reframe.`,
+      ``,
+      `User's exact words: "${rawInput}"`,
+      `Signal type: ${dominantSignal.type}`,
+      rt0.feeling.fromUser ? `Feeling word: ${rt0.feeling.value}` : '',
+      ``,
+      `Write 1–2 sentences that begin with "Like " and describe the specific felt experience`,
+      `beneath the surface — the physical or experiential texture, not the situation or cause.`,
+      ``,
+      `Rules:`,
+      `— Must begin with "Like "`,
+      `— This is expansion, not a pivot — stay on the same emotional thread`,
+      `— Do NOT use "something", "it", "this" as vague subjects`,
+      `— No questions, no new themes not already present in the user's words`,
+      `— 10–20 words maximum`,
+      `— Output ONLY the line(s). No quotes, no label, no preamble.`,
+    ].filter(Boolean).join('\n');
+    const result = await callLLM(prompt);
+    if (result) return result;
+  } catch {
+    // fall through to template logic
+  }
+
+  // ── Template fallback ────────────────────────────────────────────────────────
   const rt = extractReflectionTerms(rawInput, dominantSignal.type);
   const hasFeeling = rt.feeling.fromUser;
   const f = rt.feeling.value;
@@ -1205,13 +1266,55 @@ export function generateDeepeningChips(
  * - extractSourceTerms() pulls user's exact words — pattern = angle, NOT content
  * - Test: if you remove the user input, the untangle should not exist
  */
-export function generateUntangle(
+export async function generateUntangle(
   _pattern: PatternType,
   _signal: string,
   _context: Context,
   dominantSignal: DominantSignal,
   rawInput: string,
-): string {
+): Promise<string> {
+  // ── LLM path ─────────────────────────────────────────────────────────────────
+  if (!dominantSignal.isVague) {
+    try {
+      const { callLLM } = await import('./llmAdapter');
+      const t0 = extractSourceTerms(rawInput, dominantSignal.type);
+      const feeling = t0.feeling.fromUser ? t0.feeling.value : '';
+      const ctx     = t0.context.fromUser ? t0.context.value : '';
+      const action  = t0.action.fromUser  ? t0.action.value  : '';
+      const prompt = [
+        `You are writing the untangle insight in an emotional conversation.`,
+        `An untangle is a shift in perspective — not coaching, not advice, not encouragement.`,
+        `It names the real underlying dynamic the user hasn't quite named themselves.`,
+        ``,
+        `User's exact words: "${rawInput}"`,
+        `Signal type: ${dominantSignal.type}`,
+        feeling ? `Feeling: ${feeling}` : '',
+        ctx     ? `Context: ${ctx}`     : '',
+        action  ? `Situation: ${action}` : '',
+        ``,
+        `Write exactly 3 lines:`,
+        `Line 1: "It's not just that you're [their feeling word]."`,
+        `Line 2: Name the specific structural truth beneath — the actual dynamic driving it`,
+        `        (e.g. unmet need, invisible cost, impossible position). One sentence.`,
+        `Line 3: A short, grounded observation in **bold**. This is the shift —`,
+        `        the thing that reframes without solving.`,
+        ``,
+        `Rules:`,
+        `— No coaching language: no "you should", "you might", "try", "consider", "it helps to"`,
+        `— No solutions, no action steps, no reframes toward positivity`,
+        `— Do not introduce people, events, or causes the user did not mention`,
+        `— The bold line names something true — it is not advice`,
+        `— Specific to this exact input — nothing that could apply to anyone`,
+        `— Output ONLY the 3 lines. No labels, no preamble, no quotes.`,
+      ].filter(Boolean).join('\n');
+      const result = await callLLM(prompt);
+      if (result) return result;
+    } catch {
+      // fall through to template logic
+    }
+  }
+
+  // ── Template fallback ────────────────────────────────────────────────────────
   // EARLY STAGE UNCERTAINTY RULE: vague input → cannot form grounded untangle.
   // hasClarity() should block this path from ever being shown — but kept as safe fallback.
   if (dominantSignal.isVague) {
@@ -2150,10 +2253,13 @@ export async function generateUntangleResponse(userText: string, precomputedSign
 
   // Generators: dominantSignal drives reflection/alignment direction
   // Deepening + Untangle: SOURCE LOCK — userText passed, content built from user's words
-  const reflection       = generateReflection(patternType, signal, context, dominantSignal, userText);
-  const deepening        = generateDeepening(patternType, signal, context, dominantSignal, userText);
+  // Run the three async generators in parallel — each tries LLM first, falls back to templates.
+  const [reflection, deepening, untangle] = await Promise.all([
+    generateReflection(patternType, signal, context, dominantSignal, userText),
+    generateDeepening(patternType, signal, context, dominantSignal, userText),
+    generateUntangle(patternType, signal, context, dominantSignal, userText),
+  ]);
   const deepeningChips   = generateDeepeningChips(dominantSignal, userText);
-  const untangle         = generateUntangle(patternType, signal, context, dominantSignal, userText);
   const alignmentOptions = generateAlignmentOptions(patternType, signal, context, dominantSignal, userText);
   const screen4Options   = getScreen4Options(patternType, userText, dominantSignal);
   const paths            = generatePaths(patternType, untangle, signal, context, dominantSignal);
