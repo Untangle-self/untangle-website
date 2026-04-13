@@ -14,7 +14,6 @@ export default function App() {
   const {
     currentStep,
     addMessage,
-    addMessageWithChips,
     setTyping,
     setStep,
     untangleReveal,
@@ -39,7 +38,9 @@ export default function App() {
   const handleFreeSubmit = useCallback(async (userText: string) => {
     if (!userText.trim()) return;
 
+    // ✅ USER MESSAGE
     addMessage({ role: 'user', text: userText });
+
     setTyping(true);
     setStep('user-reflection');
 
@@ -47,33 +48,30 @@ export default function App() {
       const response: any = await callLLM(userText);
       setTyping(false);
 
-      // Reflection
+      // ✅ REFLECTION
       addMessage({
         role: 'app',
         text: response?.reflection || "Something feels off, even if it's hard to name.",
       });
 
-      // 🔥 Deepening + Chips (CLEAN FIX)
+      // ✅ DEEPENING + CHIPS (simple + stable)
       if (response?.deepening) {
         setTimeout(() => {
-          addMessageWithChips(
-            {
-              role: 'app',
-              text: response.deepening,
-              chips: [
-                { id: 'fits', label: 'yeah… that fits' },
-                { id: 'not-really', label: 'not really' },
-                { id: 'something-else', label: 'something else' },
-              ],
-            },
-            'user-deepening'
-          );
+          addMessage({
+            role: 'app',
+            text: response.deepening,
+            chips: [
+              { id: 'fits', label: 'yeah… that fits' },
+              { id: 'not-really', label: 'not really' },
+              { id: 'something-else', label: 'something else' },
+            ],
+          });
 
           setStep('user-deepening');
         }, 500);
       }
 
-      // Untangle
+      // ✅ UNTANGLE
       if (response?.untangle) {
         revealUntangle(response.untangle);
       }
@@ -87,7 +85,7 @@ export default function App() {
         text: "Something didn’t land right. Try again.",
       });
     }
-  }, [addMessage, addMessageWithChips, setTyping, setStep, revealUntangle]);
+  }, [addMessage, setTyping, setStep, revealUntangle]);
 
   const handleUntangleSeen = () => {
     if (untangleReveal) {
@@ -122,10 +120,6 @@ export default function App() {
         <StartScreen
           onFreeSubmit={handleFreeSubmit}
           onDemoSubmit={() => {
-            addMessage({
-              role: 'user',
-              text: "I feel off and I don’t know why",
-            });
             handleFreeSubmit("I feel off and I don’t know why");
           }}
         />
