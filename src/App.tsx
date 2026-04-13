@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { callLLM } from './services/llmService.ts';
+import { callLLM } from './services/llmService';
 import { AnimatePresence } from 'framer-motion';
 import { BackgroundCanvas } from './components/layout/BackgroundCanvas';
 import { StartScreen } from './components/layout/StartScreen';
