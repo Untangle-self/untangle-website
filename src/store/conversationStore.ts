@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { Message, FlowStep, Branch, A1Selection, PatternType, ChipOption } from '../types/flow';
-import type { PathAContent, PathBContent, PathCContent } from '../services/responseService';
+import type { PathAContent, PathBContent, PathCContent } from '../services/responseService.ts';
 
 interface ConversationState {
   messages: Message[];
