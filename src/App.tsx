@@ -10,20 +10,13 @@ import { ClaritySnapshot } from './components/summary/ClaritySnapshot';
 import { useConversationStore } from './store/conversationStore';
 import { useFlowEngine } from './hooks/useFlowEngine';
 
-// ❌ OLD SYSTEM (kept for later, NOT active now)
-// import {
-//   generateUntangleResponse,
-//   classifySignal,
-//   hasClarity,
-//   extractPrimaryFeeling,
-//   generateMergedReflection,
-//   generateMergedDeepening,
-// } from './services/responseService';
+// ✅ Chip options (your system restored)
 
 export default function App() {
   const {
     currentStep,
     addMessage,
+    addMessageWithChips,
     setTyping,
     setStep,
     untangleReveal,
@@ -53,19 +46,20 @@ export default function App() {
           "Something feels off, even if it's hard to name.",
       });
 
-      // 2. Deepening → move into interaction step
+      // 2. Deepening WITH CHIPS (correct system)
       if (response?.deepening) {
         setTimeout(() => {
-          addMessage({
-            role: 'app',
-            text: response.deepening,
-          });
+          addMessageWithChips(
+            {
+              role: 'app',
+              text: response.deepening,
+            },
+            'user-deepening' // 👈 THIS triggers chip system
+          );
 
           setStep('user-deepening');
         }, 600);
       }
-
-      // ❌ DO NOT trigger untangle here
 
     } catch (err) {
       console.error('LLM failed:', err);
@@ -76,7 +70,7 @@ export default function App() {
         text: "Something didn’t land right. Try again.",
       });
     }
-  }, [addMessage, setTyping, setStep]);
+  }, [addMessage, addMessageWithChips, setTyping, setStep]);
 
   const handleUntangleSeen = () => {
     if (untangleReveal) {
@@ -128,34 +122,8 @@ export default function App() {
       <BackgroundCanvas />
 
       <div style={{ position: 'relative', zIndex: 1, height: '100%' }}>
+        {/* ✅ ChatThread now controls chips again */}
         <ChatThread />
-
-        {/* ✅ SIMPLE CHIP INTERACTION LAYER */}
-        {currentStep === 'user-deepening' && (
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 20,
-              left: 0,
-              right: 0,
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '10px',
-            }}
-          >
-            <button onClick={() => advanceStep(['yeah that fits'])}>
-              yeah… that fits
-            </button>
-
-            <button onClick={() => advanceStep(['not really'])}>
-              not really
-            </button>
-
-            <button onClick={() => setStep('user-reflection')}>
-              something else
-            </button>
-          </div>
-        )}
 
         <AnimatePresence>
           {untangleReveal && (
