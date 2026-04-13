@@ -1,6 +1,45 @@
 // responseService.ts
 
-import {
+// SIMPLIFIED responseService.ts (safe version)
+
+export async function generateUntangleResponse(userText: string) {
+  try {
+    const res = await fetch('/api/llm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input: userText }),
+    });
+
+    const data = await res.json();
+
+    return {
+      reflection: data.reflection || "Something feels off.",
+      deepening: data.deepening || "There’s more under this.",
+      untangle: data.untangle || "It’s sitting with you longer than expected.",
+      patternType: 'generic',
+      deepeningChips: [],
+      alignmentOptions: [],
+      screen4Options: [],
+      paths: {},
+    };
+
+  } catch (err) {
+    console.error("LLM failed:", err);
+
+    return {
+      reflection: "Something feels off.",
+      deepening: "There’s more under this.",
+      untangle: "It’s sitting with you longer than expected.",
+      patternType: 'generic',
+      deepeningChips: [],
+      alignmentOptions: [],
+      screen4Options: [],
+      paths: {},
+    };
+  }
+}
+
+/*import {
   extractSignal,
   enrichContext,
   detectDominantSignal,
@@ -148,4 +187,4 @@ export async function generateUntangleResponse(
     screen4Options,
     ...paths,
   };
-}
+} */
