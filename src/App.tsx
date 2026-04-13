@@ -4,7 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import { BackgroundCanvas } from './components/layout/BackgroundCanvas';
 import { StartScreen } from './components/layout/StartScreen';
 import { UnTangleReveal } from './components/layout/UnTangleReveal';
-import { ChatThread } from './components/chat/ChatThread';
+import ChatThread  from './components/chat/ChatThread';
 import { SummaryPage } from './components/summary/SummaryPage';
 import { ClaritySnapshot } from './components/summary/ClaritySnapshot';
 import { useConversationStore } from './store/conversationStore';

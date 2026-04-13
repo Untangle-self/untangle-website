@@ -4,7 +4,7 @@ import { useAutoScroll } from '../../hooks/useAutoScroll';
 import { TypingIndicator } from './TypingIndicator';
 import { OptionChip } from '../controls/OptionChip';
 
-export function ChatThread() {
+export default function ChatThread() {
   const { messages, isTyping } = useConversationStore();
   const scrollRef = useAutoScroll(messages, isTyping);
 
@@ -20,20 +20,27 @@ export function ChatThread() {
       }}
     >
       {messages.map((msg) => (
-        <div key={msg.id} style={{ marginBottom: '16px' }}>
-
+        <div
+          key={msg.id}
+          style={{
+            marginBottom: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start',
+          }}
+        >
           {/* Message /}
           <div
             style={{
               padding: '10px 14px',
               borderRadius: '12px',
               background: msg.role === 'user' ? '#dbeafe' : '#ffffff',
-              alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
               maxWidth: '70%',
-              color: '#000',
+              display: 'inline-block',
+              wordBreak: 'break-word',
             }}
           >
-            {msg.text || ''}
+            {msg.text}
           </div>
 
           {/ Chips */}
@@ -57,7 +64,6 @@ export function ChatThread() {
               ))}
             </div>
           )}
-
         </div>
       ))}
 
