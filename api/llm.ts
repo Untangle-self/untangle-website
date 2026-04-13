@@ -3,7 +3,7 @@ export default async function handler(req, res) {
 
   try {
     const { generateUntangleResponse } = await import(
-      "../../src/services/responseService"
+      "../src/services/responseService"
     );
 
     console.log("IMPORT OK");
