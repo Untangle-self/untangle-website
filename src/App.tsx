@@ -1,11 +1,10 @@
-import { useCallback } from 'react'; //useEffect, useState, 
+import { useCallback } from 'react';
 import { callLLM } from './services/llmService.ts';
-import { AnimatePresence} from 'framer-motion'; // , motion 
+import { AnimatePresence } from 'framer-motion';
 import { BackgroundCanvas } from './components/layout/BackgroundCanvas';
 import { StartScreen } from './components/layout/StartScreen';
 import { UnTangleReveal } from './components/layout/UnTangleReveal';
 import { ChatThread } from './components/chat/ChatThread';
-// import { CTAButton } from './components/controls/CTAButton';
 import { SummaryPage } from './components/summary/SummaryPage';
 import { ClaritySnapshot } from './components/summary/ClaritySnapshot';
 import { useConversationStore } from './store/conversationStore';
@@ -24,31 +23,17 @@ import { useFlowEngine } from './hooks/useFlowEngine';
 export default function App() {
   const {
     currentStep,
-    // isTyping,
     addMessage,
     setTyping,
     setStep,
     untangleReveal,
     setUntangleReveal,
-    // reset,
   } = useConversationStore();
 
   const { advanceStep } = useFlowEngine();
 
-  //const [controlsReady, setControlsReady] = useState(false);
-
-  // Controls timing
-  /*useEffect(() => {
-    if (isTyping) {
-      setControlsReady(false);
-      return;
-    }
-    const t = setTimeout(() => setControlsReady(true), 500);
-    return () => clearTimeout(t);
-  }, [isTyping]); */
-
-  // Reveal untangle safely
-  const revealUntangle = useCallback((text: string) => {
+  // ✅ Safe untangle reveal (ONLY used later, not immediately)
+  /*const revealUntangle = useCallback((text: string) => {
     if (!text) return;
 
     setTimeout(() => {
@@ -59,9 +44,9 @@ export default function App() {
         setStep('user-untangle');
       }, 1200);
     }, 600);
-  }, [setTyping, setUntangleReveal, setStep]);
+  }, [setTyping, setUntangleReveal, setStep]); */
 
-  // ✅ MAIN LLM FLOW (clean + safe)
+  // ✅ MAIN FLOW (FIXED)
   const handleFreeSubmit = useCallback(async (userText: string) => {
     if (!userText.trim()) return;
 
@@ -74,26 +59,31 @@ export default function App() {
 
       setTyping(false);
 
-      // Reflection
+      // ✅ 1. Reflection
       addMessage({
         role: 'app',
         text: response?.reflection || "Something feels off, even if it's hard to name."
       });
 
-      // Deepening
+      // ✅ 2. Deepening (AFTER reflection, with pause)
       if (response?.deepening) {
         setTimeout(() => {
           addMessage({
             role: 'app',
             text: response.deepening
           });
+
+          // 👉 IMPORTANT: we move step here (not untangle)
+          setStep('user-deepening');
+
         }, 600);
       }
 
-      // Untangle
-      if (response?.untangle) {
-        revealUntangle(response.untangle);
-      }
+      // ❌ DO NOT TRIGGER UNTANGLE HERE
+      // ❌ This was breaking your flow
+      // if (response?.untangle) {
+      //   revealUntangle(response.untangle);
+      // }
 
     } catch (err) {
       console.error("LLM failed:", err);
@@ -104,7 +94,7 @@ export default function App() {
         text: "Something didn’t land right. Try again."
       });
     }
-  }, [addMessage, setTyping, setStep, revealUntangle]);
+  }, [addMessage, setTyping, setStep]);
 
   const handleUntangleSeen = () => {
     if (untangleReveal) {
