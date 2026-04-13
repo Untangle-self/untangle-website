@@ -20,16 +20,20 @@ export type FlowStep =
   | 'summary'
   | 'clarity';
 
+export interface ChipOption {
+  id: string;
+  label: string;
+}
+
+// ✅ UPDATED MESSAGE TYPE (THIS IS THE FIX)
 export interface Message {
   id: string;
   role: MessageRole;
   text: string;
   label?: string;
-}
 
-export interface ChipOption {
-  id: string;
-  label: string;
+  // 🔥 ADD THIS
+  chips?: ChipOption[];
 }
 
 export type ControlConfig =

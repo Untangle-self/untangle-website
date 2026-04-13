@@ -10,8 +10,6 @@ import { ClaritySnapshot } from './components/summary/ClaritySnapshot';
 import { useConversationStore } from './store/conversationStore';
 import { useFlowEngine } from './hooks/useFlowEngine';
 
-// ✅ Chip options (your system restored)
-
 export default function App() {
   const {
     currentStep,
@@ -25,7 +23,19 @@ export default function App() {
 
   const { advanceStep } = useFlowEngine();
 
-  // MAIN FLOW
+  const revealUntangle = useCallback((text: string) => {
+    if (!text) return;
+
+    setTimeout(() => {
+      setTyping(true);
+      setTimeout(() => {
+        setTyping(false);
+        setUntangleReveal(text);
+        setStep('user-untangle');
+      }, 1200);
+    }, 600);
+  }, [setTyping, setUntangleReveal, setStep]);
+
   const handleFreeSubmit = useCallback(async (userText: string) => {
     if (!userText.trim()) return;
 
@@ -35,39 +45,41 @@ export default function App() {
 
     try {
       const response: any = await callLLM(userText);
-
       setTyping(false);
 
-      // 1. Reflection
+      // Reflection
       addMessage({
         role: 'app',
-        text:
-          response?.reflection ||
-          "Something feels off, even if it's hard to name.",
+        text: response?.reflection || "Something feels off, even if it's hard to name.",
       });
 
-      // 2. Deepening WITH CHIPS (correct system)
+      // 🔥 Deepening + Chips (CLEAN FIX)
       if (response?.deepening) {
         setTimeout(() => {
-          const msgIndex = addMessageWithChips(
+          addMessageWithChips(
             {
               role: 'app',
               text: response.deepening,
+              chips: [
+                { id: 'fits', label: 'yeah… that fits' },
+                { id: 'not-really', label: 'not really' },
+                { id: 'something-else', label: 'something else' },
+              ],
             },
             'user-deepening'
           );
-      
-          // 👇 THIS LINE FIXES YOUR PROBLEM
-          setTimeout(() => {
-            useConversationStore.getState().setActiveChipsMsgIndex(msgIndex);
-          }, 0);
-      
+
           setStep('user-deepening');
-        }, 600);
+        }, 500);
+      }
+
+      // Untangle
+      if (response?.untangle) {
+        revealUntangle(response.untangle);
       }
 
     } catch (err) {
-      console.error('LLM failed:', err);
+      console.error("LLM failed:", err);
       setTyping(false);
 
       addMessage({
@@ -75,7 +87,7 @@ export default function App() {
         text: "Something didn’t land right. Try again.",
       });
     }
-  }, [addMessage, addMessageWithChips, setTyping, setStep]);
+  }, [addMessage, addMessageWithChips, setTyping, setStep, revealUntangle]);
 
   const handleUntangleSeen = () => {
     if (untangleReveal) {
@@ -85,7 +97,6 @@ export default function App() {
     advanceStep();
   };
 
-  // Screens
   if (currentStep === 'summary') {
     return (
       <div style={{ position: 'fixed', inset: 0 }}>
@@ -127,7 +138,6 @@ export default function App() {
       <BackgroundCanvas />
 
       <div style={{ position: 'relative', zIndex: 1, height: '100%' }}>
-        {/* ✅ ChatThread now controls chips again */}
         <ChatThread />
 
         <AnimatePresence>
