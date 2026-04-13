@@ -1,133 +1,101 @@
 import { useCallback } from 'react';
-import { callLLM } from './services/llmService';
 import { AnimatePresence } from 'framer-motion';
 import { BackgroundCanvas } from './components/layout/BackgroundCanvas';
 import { StartScreen } from './components/layout/StartScreen';
 import { UnTangleReveal } from './components/layout/UnTangleReveal';
-import ChatThread  from './components/chat/ChatThread';
-import { SummaryPage } from './components/summary/SummaryPage';
-import { ClaritySnapshot } from './components/summary/ClaritySnapshot';
+import ChatThread from './components/chat/ChatThread';
 import { useConversationStore } from './store/conversationStore';
-import { useFlowEngine } from './hooks/useFlowEngine';
+import { callLLM } from './services/llmService';
 
 export default function App() {
   const {
     currentStep,
     addMessage,
+    addMessageWithChips,
     setTyping,
+    setStep,
     untangleReveal,
     setUntangleReveal,
   } = useConversationStore();
 
-  const { advanceStep } = useFlowEngine();
-
-  // ✅ FIXED UNTANGLE REVEAL
-  const revealUntangle = useCallback((text: string) => {
-    if (!text) return;
-
-    setTimeout(() => {
-      setTyping(true);
-
-      setTimeout(() => {
-        setTyping(false);
-        setUntangleReveal(text);
-      }, 800);
-
-    }, 400);
-  }, [setTyping, setUntangleReveal]);
-
-  // ✅ CLEAN FLOW (NO STEP BREAKING)
   const handleFreeSubmit = useCallback(async (userText: string) => {
     if (!userText.trim()) return;
-
-    // USER
-    addMessage({ role: 'user', text: userText });
+  
+    addMessage({
+      role: 'user',
+      text: userText,
+    });
+  
+    setStep('chat');
     setTyping(true);
-
+  
     try {
       const response: any = await callLLM(userText);
+  
+      // ✅ ADD HERE
+      if (!response?.reflection || !response?.deepening) {
+        throw new Error("LLM response incomplete");
+      }
+  
       setTyping(false);
-
-      // REFLECTION
+  
       addMessage({
         role: 'app',
-        text: response?.reflection || "Something feels off.",
+        text: response.reflection,
       });
-
-      // DEEPENING + CHIPS
+  
       setTimeout(() => {
-        addMessage({
-          role: 'app',
-          text: response?.deepening || "There’s something under that.",
-          chips: [
-            { id: 'fits', label: 'yeah… that fits' },
-            { id: 'not-really', label: 'not really' },
-            { id: 'something-else', label: 'something else' },
-          ],
-        });
-      }, 400);
-
-      // UNTANGLE (comes AFTER UI renders)
-      setTimeout(() => {
-        if (response?.untangle) {
-          revealUntangle(response.untangle);
-        }
-      }, 1200);
-
+        addMessageWithChips(
+          {
+            role: 'app',
+            text: response.deepening,
+            chips: [
+              { id: 'fits', label: 'yeah… that fits' },
+              { id: 'not-really', label: 'not really' },
+              { id: 'something-else', label: 'something else' },
+            ],
+          },
+          'deepening'
+        );
+      }, 300);
+  
     } catch (err) {
       console.error("LLM failed:", err);
       setTyping(false);
-
-      addMessage({
-        role: 'app',
-        text: "Something didn’t land right. Try again.",
-      });
     }
-  }, [addMessage, setTyping, revealUntangle]);
+  }, []);
 
-  // ✅ FIXED: GO ON BUTTON FLOW
   const handleUntangleSeen = () => {
-    if (untangleReveal) {
+    if (!untangleReveal) return;
+  
+    addMessage({
+      role: 'app',
+      text: untangleReveal,
+    });
+  
+    setUntangleReveal(null);
+  
+    // ✅ CRITICAL: move flow forward
+    setTimeout(() => {
       addMessage({
         role: 'app',
-        text: untangleReveal,
-        label: 'Untangle',
+        text: "Want to go a little deeper or leave it here?",
+        chips: [
+          { id: 'deeper', label: 'go deeper' },
+          { id: 'done', label: 'this is enough' },
+        ],
       });
-    }
-
-    setUntangleReveal(null);
-    advanceStep(); // move forward properly
+    }, 300);
   };
-
-  // SCREENS
-  if (currentStep === 'summary') {
-    return (
-      <div style={{ position: 'fixed', inset: 0 }}>
-        <BackgroundCanvas />
-        <SummaryPage />
-      </div>
-    );
-  }
-
-  if (currentStep === 'clarity') {
-    return (
-      <div style={{ position: 'fixed', inset: 0 }}>
-        <BackgroundCanvas />
-        <ClaritySnapshot />
-      </div>
-    );
-  }
 
   if (currentStep === 'start') {
     return (
       <div style={{ position: 'fixed', inset: 0 }}>
         <BackgroundCanvas />
-        <StartScreen
-          onFreeSubmit={handleFreeSubmit}
-          onDemoSubmit={() => {
-            handleFreeSubmit("I feel off and I don’t know why");
-          }}
-        />
+        <StartScreen 
+  onFreeSubmit={handleFreeSubmit}
+  onDemoSubmit={() => handleFreeSubmit("I feel off")}
+ />
       </div>
     );
   }

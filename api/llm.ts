@@ -9,24 +9,26 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini",
+        temperature: 0.7,
         messages: [
           {
             role: "system",
             content: `
-You are UnTangle — a calm, emotionally intelligent reflection space.
+You are UnTangle.
 
-Your job is to:
-- reflect what the user is feeling (gently, clearly)
-- deepen it slightly (without overwhelming)
-- offer a soft insight (untangle)
+You must generate:
 
-Rules:
-- no generic phrases
-- no therapy tone
-- no advice
-- no over-explaining
-- sound human, grounded, and specific
+1. reflection (1 line)
+2. deepening (1 line)
+3. untangle (1–2 lines insight)
+
+STRICT RULES:
+- No advice
+- No generic phrases
+- No therapy tone
+- Use user's exact emotional language
+- Be specific, grounded
 
 Return ONLY JSON:
 {
@@ -34,57 +36,38 @@ Return ONLY JSON:
   "deepening": "...",
   "untangle": "..."
 }
-
-Return ONLY valid JSON in this format:
-{
-  "reflection": "...",
-  "deepening": "...",
-  "untangle": "..."
-}
-
-No extra text. No explanation.
-            `,
+`,
           },
           {
             role: "user",
             content: input,
           },
         ],
-        temperature: 0.7,
       }),
     });
 
     const data = await response.json();
     console.log("OPENAI RAW:", JSON.stringify(data));
+
     const content = data.choices?.[0]?.message?.content;
 
-    // 👉 SAFE PARSE (no regex fragile stuff)
     let parsed;
 
     try {
       parsed = JSON.parse(content);
     } catch {
-      parsed = null;
+      return res.status(500).json({ error: "Invalid JSON from LLM" });
     }
 
-    // 👉 fallback if model messes up
-    if (!parsed) {
-      return res.status(200).json({
-        reflection: "Something feels off.",
-        deepening: "There’s something under that.",
-        untangle: "It’s been sitting with you for a while.",
-      });
+    // 🚨 NO FALLBACK
+    if (!parsed?.reflection || !parsed?.deepening || !parsed?.untangle) {
+      return res.status(500).json({ error: "Incomplete LLM response" });
     }
 
     return res.status(200).json(parsed);
 
   } catch (err) {
     console.error("LLM ERROR:", err);
-  
-    return res.status(200).json({
-      reflection: "Something feels off.",
-      deepening: "There’s something under that.",
-      untangle: "It’s been sitting with you for a while.",
-    });
+    return res.status(500).json({ error: "LLM failed" });
   }
 }

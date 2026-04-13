@@ -104,32 +104,49 @@ const initialState = {
 export const useConversationStore = create<ConversationState>((set) => ({
   ...initialState,
 
+  // ✅ FIXED: stable + safe message creation
   addMessage: (msg) =>
     set((state) => ({
-      messages: [...state.messages, { ...msg, id: `${Date.now()}-${Math.random()}` }],
+      messages: [
+        ...state.messages,
+        {
+          id: crypto.randomUUID(), // ✅ stable React key
+          role: msg.role,
+          text: msg.text,
+          label: msg.label,
+          chips: msg.chips ?? undefined, // ✅ ensure consistency
+        },
+      ],
     })),
 
-    addMessageWithChips: (msg, stepName) => {
-      let index = 0;
-    
-      set((state) => {
-        index = state.messages.length;
-    
-        return {
-          messages: [
-            ...state.messages,
-            { ...msg, id: `${Date.now()}-${Math.random()}` },
-          ],
-          activeChipsMsgIndex: index,
-          chipStepForMsg: {
-            ...state.chipStepForMsg,
-            [index]: stepName,
+  // ✅ FIXED: chips + index tracking
+  addMessageWithChips: (msg, stepName) => {
+    let index = 0;
+
+    set((state) => {
+      index = state.messages.length;
+
+      return {
+        messages: [
+          ...state.messages,
+          {
+            id: crypto.randomUUID(),
+            role: msg.role,
+            text: msg.text,
+            label: msg.label,
+            chips: msg.chips ?? [],
           },
-        };
-      });
-    
-      return index; // ✅ THIS FIXES YOUR ERROR
-    },
+        ],
+        activeChipsMsgIndex: index,
+        chipStepForMsg: {
+          ...state.chipStepForMsg,
+          [index]: stepName,
+        },
+      };
+    });
+
+    return index;
+  },
 
   lockChipSelection: (msgIndex, selected) =>
     set((state) => ({
