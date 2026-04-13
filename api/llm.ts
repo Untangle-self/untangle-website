@@ -55,6 +55,7 @@ No extra text. No explanation.
     });
 
     const data = await response.json();
+    console.log("OPENAI RAW:", JSON.stringify(data));
     const content = data.choices?.[0]?.message?.content;
 
     // 👉 SAFE PARSE (no regex fragile stuff)
@@ -78,6 +79,8 @@ No extra text. No explanation.
     return res.status(200).json(parsed);
 
   } catch (err) {
+    console.error("LLM ERROR:", err);
+  
     return res.status(200).json({
       reflection: "Something feels off.",
       deepening: "There’s something under that.",
