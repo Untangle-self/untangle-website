@@ -49,14 +49,19 @@ export default function App() {
       // 2. Deepening WITH CHIPS (correct system)
       if (response?.deepening) {
         setTimeout(() => {
-          addMessageWithChips(
+          const msgIndex = addMessageWithChips(
             {
               role: 'app',
               text: response.deepening,
             },
-            'user-deepening' // 👈 THIS triggers chip system
+            'user-deepening'
           );
-
+      
+          // 👇 THIS LINE FIXES YOUR PROBLEM
+          setTimeout(() => {
+            useConversationStore.getState().setActiveChipsMsgIndex(msgIndex);
+          }, 0);
+      
           setStep('user-deepening');
         }, 600);
       }
