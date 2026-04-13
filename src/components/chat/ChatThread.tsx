@@ -22,12 +22,29 @@ export function ChatThread() {
       {messages.map((msg) => (
         <div key={msg.id} style={{ marginBottom: '16px' }}>
           
-          {/* Message /}
-          <div>{msg.text}</div>
+          {/* ✅ Message /}
+          <div
+            style={{
+              padding: '10px 14px',
+              borderRadius: '12px',
+              background: msg.role === 'user' ? '#dbeafe' : '#ffffff',
+              alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+              maxWidth: '70%',
+            }}
+          >
+            {msg.text}
+          </div>
 
-          {/ ✅ Chips (FINAL WORKING VERSION) */}
+          {/ ✅ Chips */}
           {msg.chips && (
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '6px' }}>
+            <div
+              style={{
+                display: 'flex',
+                gap: '8px',
+                flexWrap: 'wrap',
+                marginTop: '6px',
+              }}
+            >
               {msg.chips.map((chip) => (
                 <OptionChip
                   key={chip.id}
@@ -39,7 +56,6 @@ export function ChatThread() {
               ))}
             </div>
           )}
-
         </div>
       ))}
 
@@ -47,4 +63,5 @@ export function ChatThread() {
         {isTyping && <TypingIndicator key="typing" />}
       </AnimatePresence>
     </div>
-  )}
+  );
+}
