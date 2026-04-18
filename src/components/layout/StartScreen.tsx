@@ -64,7 +64,7 @@ export function StartScreen({ onFreeSubmit, onDemoSubmit }: Props) {
         <div
           style={{
             width: '100%',
-            background: 'rgba(255,255,255,0.55)',
+            background: 'rgba(255,255,255,0.75)',
             borderRadius: '16px',
             padding: '16px 18px',
             boxShadow: '0 1px 12px rgba(0,0,0,0.06)',

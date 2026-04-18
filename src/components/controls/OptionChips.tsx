@@ -1,40 +1,43 @@
-import { useState } from 'react';
-import type { ChipOption } from '../../types/flow';
-import { OptionChip } from './OptionChip';
+import React from "react";
+import OptionChip from "./OptionChip";
 
-interface Props {
-  options: ChipOption[];
-  multiSelect?: boolean;
-  onChange: (selected: string[]) => void;
-  disabled?: boolean;
+interface Chip {
+  id: string;
+  label: string;
 }
 
-export function OptionChips({ options, multiSelect = false, onChange, disabled }: Props) {
-  const [selected, setSelected] = useState<string[]>([]);
+interface Props {
+  options: Chip[];
+  selectedIds: string[];
+  disabled: boolean;
+  onSelect: (value: string) => void;
+}
 
-  const toggle = (id: string) => {
-    if (disabled) return;
-    let next: string[];
-    if (multiSelect) {
-      next = selected.includes(id) ? selected.filter(s => s !== id) : [...selected, id];
-    } else {
-      next = selected.includes(id) ? [] : [id];
-    }
-    setSelected(next);
-    onChange(next);
-  };
-
+const OptionChips: React.FC<Props> = ({
+  options,
+  selectedIds,
+  disabled,
+  onSelect,
+}) => {
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '8px',
+      }}
+    >
       {options.map((opt) => (
         <OptionChip
           key={opt.id}
-          label={opt.label}
-          selected={selected.includes(opt.id)}
-          onClick={() => toggle(opt.id)}
+          option={opt.label}
+          selected={selectedIds.includes(opt.id)}
           disabled={disabled}
+          onSelect={onSelect}
         />
       ))}
     </div>
   );
-}
+};
+
+export default OptionChips;

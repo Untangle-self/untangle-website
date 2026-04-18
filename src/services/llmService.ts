@@ -1,4 +1,4 @@
-export async function callLLM(input: string) {
+export async function callLLM(input: string, _messages?: any[]) {
   const res = await fetch('/api/llm', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

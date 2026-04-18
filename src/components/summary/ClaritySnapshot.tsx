@@ -44,7 +44,7 @@ function AmberBlock({ text }: { text: string }) {
 }
 
 export function ClaritySnapshot() {
-  const { coreUntangleText, miniUntangleText, reset } = useConversationStore();
+  const { llmUntangle: coreUntangleText, llmDeepening: miniUntangleText, reset } = useConversationStore();
 
   return (
     <motion.div

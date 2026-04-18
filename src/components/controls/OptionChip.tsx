@@ -1,47 +1,74 @@
+import React from "react";
+
 interface Props {
-  label: string;
+  option: string;
   selected: boolean;
-  onClick: () => void;
-  disabled?: boolean;
+  disabled: boolean;
+  onSelect: (value: string) => void;
 }
 
-export function OptionChip({ label, selected, onClick, disabled }: Props) {
-  // submitted = chosen and locked; ghosted = not chosen and locked
-  const ghosted = !selected && disabled;
-
+const OptionChip: React.FC<Props> = ({
+  option,
+  selected,
+  disabled,
+  onSelect,
+}) => {
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
+    <div
+      onClick={() => {
+        if (!disabled) onSelect(option);
+      }}
       style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '7px',
-        padding: '9px 16px',
+        padding: '8px 14px',
         borderRadius: '999px',
-        border: `1.5px solid ${selected ? '#7A8C6E' : '#C9B99A'}`,
-        background: selected ? 'rgba(122,140,110,0.15)' : 'rgba(255,255,255,0.65)',
-        color: '#2C2C2C',
-        fontSize: '14px',
+        fontSize: '13px',
         fontFamily: "'DM Sans', sans-serif",
+
+        // ✅ refined states
+        background: selected
+          ? '#E2E5D5'
+          : 'rgba(255, 255, 255, 0.6)',
+
+        border: selected
+          ? '1.5px solid #7E8F6C'
+          : '1px solid rgba(120, 100, 80, 0.15)',
+
+        // ✅ FIXED COLOR
+        color: selected ? '#2C2C2C' : '#5A5A5A',
+        fontWeight: selected ? 500 : 400,
+
         cursor: disabled ? 'default' : 'pointer',
-        transition: 'all 0.2s ease',
-        opacity: ghosted ? 0.28 : 1,
+
+        // ✅ softer disabled (not dead)
+        opacity: disabled ? 0.65 : 1,
+
+        // ✅ subtle interaction polish
+        transition: 'all 0.16s ease',
+
+        boxShadow: 'none',
+        display: 'flex',
+        alignItems: 'center',
       }}
     >
       {selected && (
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-          <circle cx="6.5" cy="6.5" r="6" stroke="#7A8C6E" />
-          <path
-            d="M3.5 6.5l2 2 4-4"
-            stroke="#7A8C6E"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <span style={{ 
+          marginRight: '6px', 
+          display: 'inline-flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          width: '14px', 
+          height: '14px', 
+          borderRadius: '50%', 
+          border: '1px solid #7E8F6C',
+          fontSize: '9px',
+          color: '#7E8F6C'
+        }}>
+          ✓
+        </span>
       )}
-      {label}
-    </button>
+      {option}
+    </div>
   );
-}
+};
+
+export default OptionChip;

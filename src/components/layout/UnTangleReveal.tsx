@@ -57,10 +57,10 @@ export function UnTangleReveal({ text, onSeen }: Props) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
       style={{
-        position: 'absolute',
+        position: 'fixed',
         inset: 0,
         pointerEvents: 'auto',
-        zIndex: 10,
+        zIndex: 100,
         background: 'rgba(237,230,214,0.98)',
         display: 'flex',
         flexDirection: 'column',

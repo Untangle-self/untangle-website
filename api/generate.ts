@@ -12,12 +12,13 @@ export default async function handler(
   if (!prompt?.trim()) {
     return res.status(400).json({ error: 'prompt is required' });
   }
+  const apiKey = "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";
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model: 'gpt-4o-mini',

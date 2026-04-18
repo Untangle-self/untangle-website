@@ -6,25 +6,44 @@ export type A1Selection = 'pulled' | 'unseen' | 'unknown' | null;
 
 export type PatternType = 'conflict' | 'overwhelm' | 'judgment' | 'generic';
 
-export type FlowStep =
+export type FlowState =
   | 'start'
-  | 'chat'
-  | 'screen1' | 'screen1b'
-  | 'screen2'
-  | 'screen3' | 'screen3b'
-  | 'screen4'
-  | 'A1' | 'A2' | 'A3'
-  | 'B1' | 'B3' | 'B4'
-  | 'C1' | 'C2' | 'C3' | 'C4'
-  | 'user-reflection'
-  | 'user-alignment'
-  | 'user-deepening'
-  | 'user-deepening-2'
-  | 'user-untangle'
-  | 'loop-nudge'
-  | 'loop-decision'
-  | 'summary'
-  | 'clarity';
+  | 'input'
+  | 'reflection'
+  | 'deepening_1'
+  | 'alignment_choice'
+  | 'deepening_2'
+  | 'untangle'
+  | 'post_untangle_choice'
+  | 'mini_untangle'
+  | 'action'
+  | 'closure';
+
+/** @deprecated use FlowState */
+export type FlowStep = FlowState;
+
+export const VALID_TRANSITIONS: Record<FlowState, FlowState[]> = {
+  start:                ['input'],
+  input:                ['reflection', 'deepening_2'],
+  reflection:           ['deepening_1'],
+  deepening_1:          ['alignment_choice'],
+  alignment_choice:     ['deepening_2', 'input'],
+  deepening_2:          ['untangle'],
+  untangle:             ['post_untangle_choice'],
+  post_untangle_choice: ['closure', 'mini_untangle', 'action'],
+  mini_untangle:        ['closure'],
+  action:               ['closure'],
+  closure:              [],
+};
+
+export function assertTransition(from: FlowState, to: FlowState): void {
+  const allowed = VALID_TRANSITIONS[from];
+  if (!allowed.includes(to)) {
+    throw new Error(
+      `[FlowState] Invalid transition: ${from} → ${to}. Allowed: [${allowed.join(', ')}]`
+    );
+  }
+}
 
 export interface ChipOption {
   id: string;
