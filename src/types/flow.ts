@@ -17,7 +17,8 @@ export type FlowState =
   | 'post_untangle_choice'
   | 'mini_untangle'
   | 'action'
-  | 'closure';
+  | 'closure'
+  | 'clarity';
 
 /** @deprecated use FlowState */
 export type FlowStep = FlowState;
@@ -34,6 +35,7 @@ export const VALID_TRANSITIONS: Record<FlowState, FlowState[]> = {
   mini_untangle:        ['closure'],
   action:               ['closure'],
   closure:              [],
+  clarity:              ['input'],
 };
 
 export function assertTransition(from: FlowState, to: FlowState): void {
