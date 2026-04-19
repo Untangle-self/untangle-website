@@ -18,18 +18,20 @@ export default async function handler(
       messages: [
         {
           role: 'system',
-          content: `You generate two short interpretation options for an emotional clarity tool.
+          content: `You generate ALIGNMENT options for an emotional clarity tool.
 
 You receive: the user's original words, an initial reframe, and a one-line observation.
 
-Generate TWO short interpretive statements (max 10–12 words each) that feel like "it's more like…" completions — the kind a person reads and thinks "oh… that's actually it."
+Generate TWO short option-style statements (max 10–12 words each) that feel like "which of these fits?".
 
 RULES:
 - Specific to THIS person's situation — never generic
-- Grounded, quiet, slightly interpretive — not therapeutic
+- Tentative and exploratory, not certain or conclusive
+- Option-like phrase only, not explanation or analysis
 - Must NOT repeat or echo the reflection or deepening
 - Do NOT use: "you feel", "you are", "you might be", "this is about"
 - Start with lowercase ("it's more like", "it's less about", "it's like", etc.)
+- Must NOT sound like DEEPENING clarity or final insight
 
 GOOD examples:
 - "it's more like you've been invisible while still showing up"

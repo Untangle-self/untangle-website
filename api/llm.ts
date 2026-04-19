@@ -29,16 +29,22 @@ REFLECTION (1–2 lines):
 - GOOD: "This feels less like something specific — and more like something internally not settling right."
 - BAD: "You feel off." (just repeating)
 
-DEEPENING (1 line):
-- Narrow the emotional pattern closer to "what exactly is wrong."
-- Not a question. Not advice. Just one grounded observation.
+DEEPENING (2 lines):
+- Must feel like it's getting closer, not repeating the user's wording.
+- Line 1: grounded acknowledgment that narrows the signal.
+- Line 2: slight interpretive shift toward what this points to underneath.
+- Not a question. Not advice. Not a full insight.
 - BANNED: "gap", "balance", "alignment", "space", "pattern"
-- GOOD: "Like things kept stacking before you could catch up."
+- GOOD: "Yeah… this feels like it's getting closer.\\nIt's less about the moment, more about what kept sitting underneath it."
 
-DEEPENING2 (1 line):
-- Takes the direction ONE STEP FURTHER than deepening.
-- Sharpens toward the core tension without concluding.
-- Must feel like the conversation is closing in on the exact thing.
+DEEPENING2 (1-2 lines):
+- Must NOT repeat or rephrase DEEPENING.
+- Must NOT introduce a new metaphor.
+- Must feel like a narrowing / sharpening of the same emotional signal.
+- Move closer to the edge of insight.
+- Be more specific and less abstract.
+- NO cause-effect.
+- NOT a full insight yet.
 - GOOD: "And the part that's hard isn't the doing — it's that nobody saw what it cost you."
 
 UNTANGLE (3–4 lines, strict structure):
@@ -74,8 +80,8 @@ GOOD untangle example:
 OUTPUT — strict JSON only:
 {
   "reflection": "string (1-2 lines)",
-  "deepening": "string (1 line)",
-  "deepening2": "string (1 line)",
+  "deepening": "string (2 lines)",
+  "deepening2": "string (1-2 lines)",
   "untangle": "line1\\\\nline2\\\\n**line3**\\\\nline4",
   "miniUntangle": "string (1-2 lines)"
 }`,
