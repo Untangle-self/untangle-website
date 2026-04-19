@@ -83,7 +83,7 @@ function delay(ms: number) {
 // ── Private sequences ────────────────────────────────────────────────────────
 
 async function runDeepening2ThenUntangle() {
-<<<<<<< Updated upstream
+
   useConversationStore.getState().setTyping(true);
   await delay(1200);
 
@@ -95,14 +95,12 @@ async function runDeepening2ThenUntangle() {
   await delay(1200);
 
   // deepening_2 render
-=======
-  const { llmDeepening2, llmUntangle } = useConversationStore.getState();
 
   useConversationStore.getState().setTyping(true);
   await delay(1200);
 
   // deepening_2 render (snapshotted text so this message always precedes untangle)
->>>>>>> Stashed changes
+
   const s2 = useConversationStore.getState();
   s2.addMessage({ role: 'app', text: s2.llmDeepening2 });
   s2.setTyping(false);
