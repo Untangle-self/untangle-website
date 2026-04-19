@@ -76,27 +76,30 @@ function delay(ms: number) {
 // ── Private sequences ────────────────────────────────────────────────────────
 
 async function runDeepening2ThenUntangle() {
+  const { llmDeepening, llmDeepening2, llmUntangle } = useConversationStore.getState();
+
   useConversationStore.getState().setTyping(true);
   await delay(1200);
 
   // deepening_1 render: re-surface core pattern as plain landing (no chips)
   const s1 = useConversationStore.getState();
-  s1.addMessage({ role: 'app', text: s1.llmDeepening });
+  s1.addMessage({ role: 'app', text: llmDeepening });
   s1.setTyping(true);
 
   await delay(1200);
 
-  // deepening_2 render
+  // deepening_2 render (snapshotted text so this message always precedes untangle)
   const s2 = useConversationStore.getState();
-  s2.addMessage({ role: 'app', text: s2.llmDeepening2 });
+  s2.addMessage({ role: 'app', text: llmDeepening2 });
   s2.setTyping(false);
 
   await delay(2400);
 
-  // Always trigger untangle — assertTransition inside transition() guards against invalid double-fire
   const s3 = useConversationStore.getState();
-  if (s3.llmUntangle) {
-    s3.setUntangleReveal(s3.llmUntangle);
+  if (s3.currentStep !== 'deepening_2') return;
+
+  if (llmUntangle) {
+    s3.setUntangleReveal(llmUntangle);
     transition('untangle');
     s3.setTyping(false);
   }
