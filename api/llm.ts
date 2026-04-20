@@ -1,5 +1,19 @@
 export default async function handler(req, res) {
-  const { input } = req.body;
+  const { userInput, input, reflection, selectedAlignment, deepening, currentInput } = req.body;
+  const baseInput = userInput || input;
+
+  const contextSections: string[] = ['=== CONTEXT ==='];
+  contextSections.push(`ORIGINAL INPUT:\n${baseInput}`);
+  if (reflection) contextSections.push(`REFLECTION:\n${reflection}`);
+  if (selectedAlignment) contextSections.push(`ALIGNMENT SELECTED:\n${selectedAlignment}`);
+  if (deepening) contextSections.push(`PREVIOUS DEEPENING:\n${deepening}`);
+  if (currentInput && currentInput !== baseInput) contextSections.push(`LATEST INPUT:\n${currentInput}`);
+  contextSections.push('=================');
+  contextSections.push(`INTERNAL INSTRUCTION:
+- Identify the key emotional signal in EACH section above
+- Note what is present in the context — but do NOT synthesize yet
+- Synthesis rules are stage-gated: see DEEPENING2 and UNTANGLE field instructions`);
+  const contextMessage = contextSections.join('\n\n');
 
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -22,26 +36,80 @@ You generate FIVE fields in one response. Each has a strict, separate role. They
 
 ---
 
+PRIORITY RULES — read before generating any field:
+
+You will receive structured context: userInput, reflection, selectedAlignment, deepening, currentInput.
+Do NOT treat currentInput as primary. Do NOT react only to the latest thing said.
+
+SYNTHESIS IS STAGE-GATED:
+- REFLECTION: mirror only — no analysis, no synthesis
+- DEEPENING (layer 1): refine selected direction — stay in lane, no synthesis yet
+- DEEPENING2: first synthesis point — begin connecting signals
+- UNTANGLE: full synthesis required — unify all signals into one truth
+
+Each field has its own cognitive level. See field instructions below.
+
+---
+
 REFLECTION (1–2 lines):
-- Reinterpret the user's emotional state. DO NOT repeat their words.
-- Introduce a slightly new framing that lands intuitively.
-- Must feel like: "oh, that's what I meant"
-- GOOD: "This feels less like something specific — and more like something internally not settling right."
-- BAD: "You feel off." (just repeating)
+STAGE RULE: Mirror the feeling only. DO NOT analyze, synthesize, or contrast. DO NOT introduce "it's not just…" or any multi-signal structure.
+- Stay grounded in the user's feeling, but lightly reshape it to make it clearer or more tangible. Do not repeat verbatim, and do not introduce new meaning.
+- Slightly rephrase for clarity, but do NOT deepen or reinterpret.
+- The reflection should feel like a clearer version of what the user already feels, not an explanation of it.
+- Must NOT infer causes or introduce concepts not present in user input.
+- BANNED reflection phrases: "this is about", "stemming from", "deeper", "underneath", "rooted in", "it's not just", "it's clear that".
+- Tone: simple, grounded, human; no therapy language.
+- OPENING STYLE: use grounded, present-feeling phrasing — close to the feeling, observational. (e.g. "It feels like something is sitting heavy…", "There's a sense of…", "Something about this keeps…")
+- Avoid abstract narrative openings or openers that sound like analysis.
+- AVOID generic emotional labels: do NOT say "you feel sad", "you feel heavy", "you're experiencing X". These are categories, not reflections.
+- ANCHOR in how the feeling shows up — describe its texture, not its name. (e.g. what it's like to carry it, how it sits, what it does)
+- PRESERVE ambiguity or texture when present — if the user's feeling is "hard to place" or "doesn't quite make sense" or "lingers", keep that quality rather than resolving it.
+- This should feel like a specific moment of recognition, not a diagnosis or summary. If it could describe anyone feeling "sad" → rewrite it.
+- GOOD: "Like something feels heavy in a way that's hard to place."
+- GOOD: "There's something that keeps coming back, even when it doesn't quite make sense."
+- BAD: "This sadness seems to stem from a deeper sense of loss or longing."
+- BAD: "You're experiencing a deep sense of heaviness."
 
-DEEPENING (1 line):
-- Narrow the emotional pattern closer to "what exactly is wrong."
-- Not a question. Not advice. Just one grounded observation.
+DEEPENING (2 lines):
+STAGE RULE: Refine the selected direction only. Stay within the same emotional lane. DO NOT synthesize multiple signals yet. DO NOT introduce contrast between separate themes.
+- Line 1: narrows the signal — get specific about what the feeling is actually pointing at.
+- Line 2: slight interpretive shift, moving closer to what's underneath.
+- Not a question. Not advice. Not a full insight.
 - BANNED: "gap", "balance", "alignment", "space", "pattern"
-- GOOD: "Like things kept stacking before you could catch up."
+- Must build ON the selected alignment direction — narrow, sharpen, or specify it. Do NOT restate it.
+- Must introduce a new layer of clarity — move closer to the core, not sideways.
+- Must NOT be semantically similar to the alignment options shown. If it echoes them → it is wrong.
+- Do NOT open with conversational filler: no "yeah", "this feels like", "it's getting closer", "I hear you", or any validation phrase.
+- Start directly with the refined insight — assume alignment is already accepted. Every line must add new clarity.
+- Feel like a continuation, not a reaction. Tight, direct, insight-driven. No softening or padding.
+- Do NOT repeatedly use structural templates like "it's not just…" or "it's less about…" — these patterns create cognitive blur across outputs.
+- Vary entry styles across outputs. Use one of these approaches (rotate, do not default to the same):
+  - Direct observation: "That heaviness…" / "That pull to…"
+  - Experiential: "It shows up more as…"
+  - Reframing: "What's underneath this is…"
+  - Contrast (sparingly): only when the contrast is sharp and specific
+- HARD RULE: Must NOT start like reflection (observational, "there's a sense of…", "it feels like…") or alignment (exploratory, "it might be…", "maybe it's…"). Use sharper, more direct entry: "What stands out is…", "At the core of this is…", "It shows up more as…"
+- HARD RULE: If opening structure echoes reflection or alignment structure → rewrite it.
+- BAD: "Yeah… this feels like it's getting closer.\\nIt's less about the moment, more about what kept sitting underneath it."
+- GOOD: "It's less about the moment, more about the exhaustion that keeps settling in."
+- GOOD: "That pull to keep going even when nothing's landing — that's the part that's tiring."
 
-DEEPENING2 (1 line):
-- Takes the direction ONE STEP FURTHER than deepening.
-- Sharpens toward the core tension without concluding.
-- Must feel like the conversation is closing in on the exact thing.
+DEEPENING2 (1-2 lines):
+STAGE RULE: First synthesis point. If multiple emotional signals exist across the context, begin connecting them now. Use synthesis structures like "It's not just X — it's Y" or varied equivalents. If only one signal exists, sharpen it. Apply PATTERN SYNTHESIS:
+- If multiple signals → combine into ONE pattern, do NOT expand one and briefly mention others
+- If output can be split into separate themes → REWRITE
+- If one signal dominates more than others → REWRITE
+- Must NOT repeat or rephrase DEEPENING.
+- Must NOT introduce a new metaphor.
+- Must feel like a narrowing / sharpening of the same emotional signal.
+- Move closer to the edge of insight.
+- Be more specific and less abstract.
+- NO cause-effect.
+- NOT a full insight yet.
 - GOOD: "And the part that's hard isn't the doing — it's that nobody saw what it cost you."
 
 UNTANGLE (3–4 lines, strict structure):
+STAGE RULE: Full synthesis required. MUST unify ALL emotional signals from ALL context layers into ONE compressed truth. HARD CHECK: Does this connect all signals? If it mainly reflects ONE → REWRITE. These are not separate things — they are the same underlying experience.
 This is NOT analysis. It is a clarity moment — a sharp landing.
 
 Line 1 → Pattern interrupt. Name what this is NOT.
@@ -74,15 +142,15 @@ GOOD untangle example:
 OUTPUT — strict JSON only:
 {
   "reflection": "string (1-2 lines)",
-  "deepening": "string (1 line)",
-  "deepening2": "string (1 line)",
+  "deepening": "string (2 lines)",
+  "deepening2": "string (1-2 lines)",
   "untangle": "line1\\\\nline2\\\\n**line3**\\\\nline4",
   "miniUntangle": "string (1-2 lines)"
 }`,
           },
           {
             role: "user",
-            content: input,
+            content: contextMessage,
           },
         ],
       }),

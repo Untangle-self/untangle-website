@@ -26,9 +26,9 @@ export type FlowStep = FlowState;
 export const VALID_TRANSITIONS: Record<FlowState, FlowState[]> = {
   start:                ['input'],
   input:                ['reflection', 'deepening_2'],
-  reflection:           ['deepening_1'],
-  deepening_1:          ['alignment_choice'],
-  alignment_choice:     ['deepening_2', 'input'],
+  reflection:           ['alignment_choice'],
+  deepening_1:          ['deepening_2', 'input'],
+  alignment_choice:     ['deepening_1', 'input'],
   deepening_2:          ['untangle'],
   untangle:             ['post_untangle_choice'],
   post_untangle_choice: ['closure', 'mini_untangle', 'action'],

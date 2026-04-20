@@ -40,6 +40,7 @@ export default function InputBox({ onSubmit }: Props) {
         bottom: '20px',
         left: '50%',
         transform: 'translateX(-50%)',
+        zIndex: 10,
         width: '90%',
         maxWidth: '500px',
         display: 'flex',
@@ -56,7 +57,6 @@ export default function InputBox({ onSubmit }: Props) {
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Say what's actually on your mind..."
-        autoFocus
         style={{
           flex: 1,
           padding: '12px',
@@ -71,15 +71,16 @@ export default function InputBox({ onSubmit }: Props) {
 
       <button
         onClick={handleSubmit}
+        disabled={!value.trim()}
         style={{
           padding: '12px 16px',
           borderRadius: '12px',
-          background: '#7A8C6E',
+          background: value.trim() ? '#7A8C6E' : '#c5cfc0',
           color: '#fff',
           border: 'none',
           fontFamily: "'DM Sans', sans-serif",
           fontSize: '14px',
-          cursor: 'pointer',
+          cursor: value.trim() ? 'pointer' : 'default',
         }}
       >
         Send
