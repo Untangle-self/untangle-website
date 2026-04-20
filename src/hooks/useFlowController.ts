@@ -62,6 +62,8 @@ const CLOSURE_CHIPS = [
 
 // ── Core transition helper ───────────────────────────────────────────────────
 
+const isProcessingRef = { current: false };
+
 function transition(to: FlowState): void {
   const { currentStep, setStep } = useConversationStore.getState();
   const allowed = VALID_TRANSITIONS[currentStep];
@@ -73,6 +75,12 @@ function transition(to: FlowState): void {
   setStep(to);
   if (to === 'deepening_2') {
     runDeepening2ThenUntangle();
+  }
+  if (to === 'deepening_1' && !isProcessingRef.current) {
+    isProcessingRef.current = true;
+    runDeepening1().finally(() => {
+      isProcessingRef.current = false;
+    });
   }
 }
 
@@ -114,6 +122,21 @@ async function runDeepening2ThenUntangle() {
     transition('untangle');
     s3.setTyping(false);
   }
+}
+
+async function runDeepening1() {
+  useConversationStore.getState().setTyping(true);
+  await delay(1200);
+  useConversationStore.getState().addMessage({
+    role: 'app',
+    text: useConversationStore.getState().llmDeepening,
+    chips: [
+      { id: 'd1', label: 'yeah… that fits' },
+      { id: 'd2', label: 'parts of it' },
+      { id: 'd3', label: 'something else' },
+    ],
+  });
+  useConversationStore.getState().setTyping(false);
 }
 
 async function runMiniUntangle() {
@@ -161,8 +184,13 @@ export function useFlowController() {
       state.setClarificationMode(false);
       useConversationStore.getState().setTyping(true);
       try {
-        const latestMessages = useConversationStore.getState().messages;
-        const res: any = await callLLM(text, latestMessages);
+          const cs = useConversationStore.getState();
+        const originalInput = cs.messages.find(m => m.role === 'user')?.text ?? text;
+        const res: any = await callLLM({
+          userInput: originalInput,
+          reflection: state.llmReflection,
+          currentInput: text,
+        });
         if (res?.deepening && res?.deepening2 && res?.untangle && res?.miniUntangle) {
           useConversationStore.getState().setLLMContent(
             state.llmReflection,
@@ -186,8 +214,7 @@ export function useFlowController() {
     useConversationStore.getState().setTyping(true);
 
     try {
-      const messages = useConversationStore.getState().messages;
-      const res: any = await callLLM(text, messages);
+      const res: any = await callLLM({ userInput: text });
 
       useConversationStore.getState().setTyping(false);
 
@@ -261,16 +288,23 @@ Line 2 starts with "it feels less like"`,
       case 'alignment_choice': {
         const { dynamicAlignmentOptions } = useConversationStore.getState();
         if (dynamicAlignmentOptions.includes(chipLabel)) {
+          useConversationStore.getState().setTyping(true);
+          try {
+            const s = useConversationStore.getState();
+            const originalInput = s.messages.find(m => m.role === 'user')?.text ?? '';
+            const res: any = await callLLM({
+              userInput: originalInput,
+              reflection: s.llmReflection,
+              selectedAlignment: chipLabel,
+            });
+            if (res?.deepening) {
+              s.setLLMContent(s.llmReflection, res.deepening, s.llmDeepening2, s.llmUntangle, s.llmMiniUntangle);
+            }
+          } catch (err) {
+            console.error('[FlowController] Deepening regeneration failed:', err);
+          }
+          useConversationStore.getState().setTyping(false);
           transition('deepening_1');
-          useConversationStore.getState().addMessage({
-            role: 'app',
-            text: useConversationStore.getState().llmDeepening,
-            chips: [
-              { id: 'd1', label: 'yeah… that fits' },
-              { id: 'd2', label: 'parts of it' },
-              { id: 'd3', label: 'something else' },
-            ],
-          });
         } else if (chipLabel === "I don't know") {
           useConversationStore.getState().addMessage({
             role: 'app',
@@ -299,8 +333,17 @@ Line 2 starts with "it feels less like"`,
             text: "Yeah… this is getting closer to what's actually underneath it.",
           });
           try {
-            const latestMessages = useConversationStore.getState().messages;
-            const res: any = await callLLM(chipLabel, latestMessages);
+            const fs = useConversationStore.getState();
+            const originalInput2 = fs.messages.find(m => m.role === 'user')?.text ?? '';
+            const selectedAlignment = fs.messages.find(
+              m => m.role === 'user' && fs.dynamicAlignmentOptions.includes(m.text)
+            )?.text;
+            const res: any = await callLLM({
+              userInput: originalInput2,
+              reflection: fs.llmReflection,
+              selectedAlignment,
+              deepening: fs.llmDeepening,
+            });
             if (res?.deepening2 && res?.untangle && res?.miniUntangle) {
               useConversationStore.getState().setLLMContent(
                 state.llmReflection,

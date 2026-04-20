@@ -31,7 +31,13 @@ RULES:
 - Must NOT repeat or echo the reflection or deepening
 - Do NOT use: "you feel", "you are", "you might be", "this is about"
 - Start with lowercase ("it's more like", "it's less about", "it's like", etc.)
+- OPENING STYLE: frame as possible directions or interpretations — slightly structured, exploratory. (e.g. "it might be less about…", "this could be more about…", "maybe it's not just…")
+- Do NOT mirror reflection phrasing or use reflection-style observational openings
 - Must NOT sound like DEEPENING clarity or final insight
+- Each option must represent a DIFFERENT angle or framing — not two versions of the same idea
+- Keep options slightly broad and open-ended — they should open a direction, not land in one
+- Do NOT go too specific or conclusive — these are exploratory directions, not answers
+- Avoid final-sounding statements; the user is still choosing, not being told
 
 GOOD examples:
 - "it's more like you've been invisible while still showing up"
