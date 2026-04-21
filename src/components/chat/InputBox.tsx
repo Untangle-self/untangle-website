@@ -15,9 +15,10 @@ interface Props {
 
 export default function InputBox({ onSubmit }: Props) {
   const currentStep = useConversationStore((s) => s.currentStep);
+  const clarificationMode = useConversationStore((s) => s.clarificationMode);
   const [value, setValue] = useState('');
 
-  if (currentStep !== 'input') return null;
+  if (currentStep !== 'input' || !clarificationMode) return null;
 
   const handleSubmit = () => {
     if (!value.trim()) return;

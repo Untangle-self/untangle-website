@@ -11,10 +11,9 @@
  *     'parts of it'      → input (clarificationMode) → deepening_2 → untangle
  *     'I don't know'     → input (clarificationMode) → deepening_2 → untangle
  *
- *   untangle → post_untangle_choice
- *     'it feels clearer' → closure
- *     'still a bit stuck'→ mini_untangle → closure
- *     'what can I do here'→ action → closure
+ *   untangle → post_untangle
+ *     'Understand' / 'Act' / 'Hold' → mini_untangle_* → decision_layer (chips)
+ *     decision_layer: sit with this → deepening_2; do something small → mini_untangle_act; leave it here → closure view
  */
 import { useCallback } from 'react';
 import { useConversationStore } from '../store/conversationStore';
@@ -38,29 +37,25 @@ async function generateAlignmentOptions(
   return res.json();
 }
 
-// ── System-defined chips (never LLM-generated) ──────────────────────────────
+// ── System-defined chips ─────────────────────────────────────────────────────
 
 const POST_UNTANGLE_CHIPS = [
-  { id: 'p1', label: 'it feels clearer' },
-  { id: 'p2', label: 'still a bit stuck' },
-  { id: 'p3', label: 'what can I do here' },
+
+  { id: 'p1', label: 'understand this feeling a bit more' },
+  { id: 'p2', label: 'what can I do here' },
+  { id: 'p3', label: "I don't know" },
+
 ];
 
-const ACTION_CHIPS = [
-  { id: 'ac1', label: 'say what you need clearly to one person' },
-  { id: 'ac2', label: 'take a pause before reacting' },
-  { id: 'ac3', label: 'step back from both sides for a bit' },
-  { id: 'ac4', label: "I don't know" },
+const DECISION_CHIPS = [
+
+  { id: 'dc1', label: 'sit with this' },
+  { id: 'dc2', label: 'do something small' },
+  { id: 'dc3', label: 'leave it here' },
+
 ];
 
-const CLOSURE_CHIPS = [
-  { id: 'f1', label: 'stay with this a bit more' },
-  { id: 'f2', label: 'look at what you can do' },
-  { id: 'f3', label: "shift what we're focusing on" },
-  { id: 'f4', label: "I think I'm okay for now" },
-];
-
-// ── Core transition helper ───────────────────────────────────────────────────
+// ── Transition helper ────────────────────────────────────────────────────────
 
 const isProcessingRef = { current: false };
 
@@ -73,350 +68,338 @@ function transition(to: FlowState): void {
   }
   assertTransition(currentStep, to);
   setStep(to);
-  if (to === 'deepening_2') {
-    runDeepening2ThenUntangle();
-  }
+
   if (to === 'deepening_1' && !isProcessingRef.current) {
     isProcessingRef.current = true;
     runDeepening1().finally(() => {
       isProcessingRef.current = false;
     });
   }
+  if (to === 'mini_untangle_understand') runMiniUntangle();
+  if (to === 'mini_untangle_act') runMiniUntangle();
+  if (to === 'mini_untangle_hold') runMiniUntangle();
 }
 
 function delay(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
 
-// ── Private sequences ────────────────────────────────────────────────────────
+function sanitizeMiniUntangle(
+  miniUntangle: unknown,
+  deepening: unknown,
+  deepening2: unknown,
+  untangle: unknown,
+): string {
+  if (typeof miniUntangle !== 'string') return '';
+  const mini = miniUntangle.trim();
+  if (!mini) return '';
+
+  const lineCount = mini.split('\n').filter((line) => line.trim().length > 0).length;
+  if (lineCount < 1 || lineCount > 2) return '';
+
+  const normalizedMini = mini.replace(/\s+/g, ' ').toLowerCase();
+  const candidates = [deepening, deepening2, untangle]
+    .filter((v): v is string => typeof v === 'string')
+    .map((v) => v.trim().replace(/\s+/g, ' ').toLowerCase());
+
+  if (candidates.includes(normalizedMini)) return '';
+  return mini;
+}
+
+// ── Sequences ────────────────────────────────────────────────────────────────
 
 async function runDeepening2ThenUntangle() {
 
-  const { llmDeepening, llmDeepening2, llmUntangle } = useConversationStore.getState();
+  const { llmDeepening2, llmUntangle } = useConversationStore.getState();
+
+  const s = useConversationStore.getState();
 
   useConversationStore.getState().setTyping(true);
-  await delay(1200);
-
-  // deepening_1 render: re-surface core pattern as plain landing (no chips)
-  const s1 = useConversationStore.getState();
-  s1.addMessage({ role: 'app', text: llmDeepening });
-  s1.setTyping(true);
 
   await delay(1200);
-  // deepening_2 render (snapshotted text so this message always precedes untangle)
-  // deepening_2 render
 
-  useConversationStore.getState().setTyping(true);
   await delay(1200);
 
-  // deepening_2 render (snapshotted text so this message always precedes untangle)
+  s.addMessage({ role: 'app', text: llmDeepening2 });
+
+  useConversationStore.getState().setTyping(false);
+
+  await delay(2000);
 
   const s2 = useConversationStore.getState();
-  s2.addMessage({ role: 'app', text: llmDeepening2 });
-  s2.setTyping(false);
 
-  await delay(2400);
-
-  const s3 = useConversationStore.getState();
-  if (s3.currentStep !== 'deepening_2') return;
+  if (s2.currentStep !== 'deepening_2') return;
 
   if (llmUntangle) {
-    s3.setUntangleReveal(llmUntangle);
+
+    s2.setUntangleReveal(llmUntangle);
+
     transition('untangle');
-    s3.setTyping(false);
+
   }
 }
 
 async function runDeepening1() {
-  useConversationStore.getState().setTyping(true);
+
+  const s = useConversationStore.getState();
+
+  s.setTyping(true);
+
   await delay(1200);
-  useConversationStore.getState().addMessage({
+
+  s.addMessage({
+
     role: 'app',
-    text: useConversationStore.getState().llmDeepening,
+
+    text: s.llmDeepening,
+
     chips: [
       { id: 'd1', label: 'yeah… that fits' },
       { id: 'd2', label: 'parts of it' },
       { id: 'd3', label: 'something else' },
     ],
   });
-  useConversationStore.getState().setTyping(false);
+
+  s.setTyping(false);
+
 }
 
 async function runMiniUntangle() {
-  useConversationStore.getState().setTyping(true);
-  await delay(1200);
 
   const s = useConversationStore.getState();
+  s.setTyping(true);
+  await delay(1200);
   if (s.llmMiniUntangle) {
-    s.addMessage({ role: 'app', text: s.llmMiniUntangle, label: 'untangle' });
+
+    s.addMessage({
+
+      role: 'app',
+
+      text: s.llmMiniUntangle,
+
+      type: 'chat',
+
+    });
+
   }
   s.setTyping(false);
 
-  await delay(1200);
-  transition('closure');
-  runClosureSequence();
-}
-
-async function runClosureSequence() {
   await delay(800);
-  useConversationStore.getState().addMessage({
+
+  s.addMessage({
+
     role: 'app',
-    text: 'Even seeing it this way\nmight already feel a little different.',
+
+    text: 'What feels right from here?',
+
+    chips: DECISION_CHIPS,
+
   });
-  await delay(1000);
-  useConversationStore.getState().addMessage({
-    role: 'app',
-    text: "We can pause here if you want — or where do you feel like going from here?",
-    chips: CLOSURE_CHIPS,
-  });
+
+  transition('decision_layer');
 }
 
-// ── Exported hook ────────────────────────────────────────────────────────────
+// ── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useFlowController() {
 
-  // ── handleUserInput ──────────────────────────────────────────────────────
   const handleUserInput = useCallback(async (text: string) => {
     if (!text.trim()) return;
 
     const state = useConversationStore.getState();
     state.addMessage({ role: 'user', text });
 
-    // CLARIFICATION PATH: alignment_choice → input → deepening_2
     if (state.clarificationMode) {
       state.setClarificationMode(false);
-      useConversationStore.getState().setTyping(true);
-      try {
-          const cs = useConversationStore.getState();
-        const originalInput = cs.messages.find(m => m.role === 'user')?.text ?? text;
-        const res: any = await callLLM({
-          userInput: originalInput,
-          reflection: state.llmReflection,
-          currentInput: text,
-        });
-        if (res?.deepening && res?.deepening2 && res?.untangle && res?.miniUntangle) {
-          useConversationStore.getState().setLLMContent(
-            state.llmReflection,
-            res.deepening,
-            res.deepening2,
-            res.untangle,
-            res.miniUntangle
-          );
-        }
-      } catch (err) {
-        console.error('[FlowController] Deepening_2 refresh failed:', err);
+
+      const cs = useConversationStore.getState();
+
+      const originalInput = cs.messages.find(m => m.role === 'user')?.text ?? text;
+
+      const res: any = await callLLM({
+
+        userInput: originalInput,
+
+        reflection: state.llmReflection,
+
+        currentInput: text,
+
+      });
+
+      if (res?.deepening && res?.deepening2 && res?.untangle && res?.miniUntangle && res?.closureSummary) {
+        const safeMiniUntangle = sanitizeMiniUntangle(
+          res.miniUntangle,
+          res.deepening,
+          res.deepening2,
+          res.untangle,
+        );
+
+        state.setLLMContent(
+
+          state.llmReflection,
+
+          res.deepening,
+
+          res.deepening2,
+
+          res.untangle,
+
+          safeMiniUntangle,
+          res.closureSummary
+
+        );
+
       }
-      useConversationStore.getState().setTyping(false);
+
       transition('deepening_2');
+      runDeepening2ThenUntangle();
       return;
     }
 
-    // INITIAL PATH: start → input → reflection → deepening_1 → alignment_choice
     if (state.currentStep === 'start') transition('input');
     transition('reflection');
-    useConversationStore.getState().setTyping(true);
+    const res: any = await callLLM({ userInput: text });
 
-    try {
-      const res: any = await callLLM({ userInput: text });
+    const safeMiniUntangle = sanitizeMiniUntangle(
+      res.miniUntangle,
+      res.deepening,
+      res.deepening2,
+      res.untangle,
+    );
 
-      useConversationStore.getState().setTyping(false);
+    state.setLLMContent(
 
-      if (!res?.reflection || !res?.deepening || !res?.deepening2 || !res?.untangle || !res?.miniUntangle) {
-        throw new Error('Incomplete LLM response');
-      }
+      res.reflection,
 
-      useConversationStore.getState().setLLMContent(
-        res.reflection, res.deepening, res.deepening2, res.untangle, res.miniUntangle
-      );
-      useConversationStore.getState().addMessage({ role: 'app', text: res.reflection });
+      res.deepening,
 
-      useConversationStore.getState().setTyping(true);
+      res.deepening2,
 
-      let option1 = '';
-      let option2 = '';
-      try {
-        const opts = await generateAlignmentOptions(text, res.reflection, res.deepening);
-        option1 = opts.option1;
-        option2 = opts.option2;
-      } catch {
-        try {
-          const fallback = await fetch('/api/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              prompt: `Based on this emotional insight: "${res.deepening.slice(0, 120)}"
-Write exactly two short alignment options (one per line, no numbering, no quotes, ≤12 words each).
-They must sound tentative and option-like (not deepening, not conclusions, not analysis):
-Line 1 starts with "it's more like"
-Line 2 starts with "it feels less like"`,
-            }),
-          }).then(r => r.json());
-          const lines = (fallback.text || '').split('\n').map((l: string) => l.trim()).filter(Boolean);
-          option1 = lines[0] || '';
-          option2 = lines[1] || '';
-        } catch { /* fall through to static below */ }
-      }
-      if (!option1) option1 = "it's something underneath it";
-      if (!option2) option2 = "it feels less about the surface";
+      res.untangle,
 
-      useConversationStore.getState().setDynamicAlignmentOptions([option1, option2]);
-      useConversationStore.getState().setTyping(false);
+      safeMiniUntangle,
+      res.closureSummary ?? ''
 
-      useConversationStore.getState().addMessage({
-        role: 'app',
-        text: res.deepening,
-        chips: [
-          { id: 'a1', label: option1 },
-          { id: 'a2', label: option2 },
-          { id: 'a3', label: 'something else' },
-          { id: 'a4', label: "I don't know" },
-        ],
-      });
+    );
 
-      transition('alignment_choice');
+    state.addMessage({ role: 'app', text: res.reflection });
 
-    } catch (err) {
-      console.error('[FlowController] LLM call failed:', err);
-      useConversationStore.getState().setTyping(false);
-    }
+    const opts = await generateAlignmentOptions(text, res.reflection, res.deepening);
+
+    state.setDynamicAlignmentOptions([opts.option1, opts.option2]);
+
+    state.addMessage({
+
+      role: 'app',
+
+      text: res.deepening,
+
+      chips: [
+
+        { id: 'a1', label: opts.option1 },
+
+        { id: 'a2', label: opts.option2 },
+
+        { id: 'a3', label: 'something else' },
+
+        { id: 'a4', label: "I don't know" },
+
+      ],
+
+    });
+
+    transition('alignment_choice');
+
   }, []);
 
-  // ── handleChipSelect ─────────────────────────────────────────────────────
   const handleChipSelect = useCallback(async (chipLabel: string) => {
     const state = useConversationStore.getState();
-    state.addMessage({ role: 'user', text: chipLabel });
 
     switch (state.currentStep) {
 
       case 'alignment_choice': {
-        const { dynamicAlignmentOptions } = useConversationStore.getState();
-        if (dynamicAlignmentOptions.includes(chipLabel)) {
-          useConversationStore.getState().setTyping(true);
-          try {
-            const s = useConversationStore.getState();
-            const originalInput = s.messages.find(m => m.role === 'user')?.text ?? '';
-            const res: any = await callLLM({
-              userInput: originalInput,
-              reflection: s.llmReflection,
-              selectedAlignment: chipLabel,
-            });
-            if (res?.deepening) {
-              s.setLLMContent(s.llmReflection, res.deepening, s.llmDeepening2, s.llmUntangle, s.llmMiniUntangle);
-            }
-          } catch (err) {
-            console.error('[FlowController] Deepening regeneration failed:', err);
-          }
-          useConversationStore.getState().setTyping(false);
-          transition('deepening_1');
-        } else if (chipLabel === "I don't know") {
-          useConversationStore.getState().addMessage({
-            role: 'app',
-            text: "It hasn't fully landed yet — that's okay.\nSay whatever comes up, even if it's messy.",
-          });
-          useConversationStore.getState().setClarificationMode(true);
-          transition('input');
-          useConversationStore.getState().setTyping(false);
-        } else {
-          // 'something else'
-          useConversationStore.getState().addMessage({
-            role: 'app',
-            text: "It hasn't fully landed yet — that's okay.\nSay whatever comes up, even if it's messy.",
-          });
-          useConversationStore.getState().setClarificationMode(true);
-          transition('input');
-          useConversationStore.getState().setTyping(false);
-        }
+
+        useConversationStore.getState().addMessage({
+          role: 'user',
+          text: chipLabel,
+        });
+
+        transition('deepening_1');
+
         break;
       }
 
       case 'deepening_1': {
         if (chipLabel === 'yeah… that fits') {
-          useConversationStore.getState().addMessage({
-            role: 'app',
-            text: "Yeah… this is getting closer to what's actually underneath it.",
-          });
-          try {
-            const fs = useConversationStore.getState();
-            const originalInput2 = fs.messages.find(m => m.role === 'user')?.text ?? '';
-            const selectedAlignment = fs.messages.find(
-              m => m.role === 'user' && fs.dynamicAlignmentOptions.includes(m.text)
-            )?.text;
-            const res: any = await callLLM({
-              userInput: originalInput2,
-              reflection: fs.llmReflection,
-              selectedAlignment,
-              deepening: fs.llmDeepening,
-            });
-            if (res?.deepening2 && res?.untangle && res?.miniUntangle) {
-              useConversationStore.getState().setLLMContent(
-                state.llmReflection,
-                state.llmDeepening,
-                res.deepening2,
-                res.untangle,
-                res.miniUntangle
-              );
-            }
-          } catch (err) {
-            console.error('[FlowController] Deepening_2 refresh failed:', err);
-          }
+
           transition('deepening_2');
-        } else if (chipLabel === 'parts of it') {
-          useConversationStore.getState().setClarificationMode(true);
+
+          runDeepening2ThenUntangle();
+
+        } else {
+
+          state.setClarificationMode(true);
+
           transition('input');
-          useConversationStore.getState().setTyping(false);
-        } else if (chipLabel === 'something else') {
-          useConversationStore.getState().setClarificationMode(true);
-          transition('input');
-          useConversationStore.getState().setTyping(false);
-        } else if (chipLabel === "I don't know") {
-          useConversationStore.getState().setClarificationMode(true);
-          transition('input');
-          useConversationStore.getState().setTyping(false);
+
         }
+
         break;
       }
 
-      case 'post_untangle_choice': {
-        if (chipLabel === 'it feels clearer') {
-          useConversationStore.getState().addMessage({ role: 'app', text: "That lands a little differently." });
+      case 'post_untangle': {
+
+        if (chipLabel === 'understand this feeling a bit more') {
+
+          transition('mini_untangle_understand');
+
+        } else if (chipLabel === 'figure out what to do next') {
+
+          transition('mini_untangle_act');
+
+        } else {
+
+          transition('mini_untangle_hold');
+
+        }
+
+        break;
+      }
+
+      case 'decision_layer': {
+        if (chipLabel === 'sit with this') {
+          transition('deepening_2');
+          runDeepening2ThenUntangle();
+        } else if (chipLabel === 'do something small') {
+          transition('mini_untangle_act');
+        } else if (chipLabel === 'leave it here') {
+          useConversationStore.getState().setCurrentView('closure');
           transition('closure');
-          runClosureSequence();
-        } else if (chipLabel === 'still a bit stuck') {
-          transition('mini_untangle');
-          runMiniUntangle();
-        } else if (chipLabel === 'what can I do here') {
-          transition('action');
-          useConversationStore.getState().addMessage({
-            role: 'app',
-            text: "If you want to do something here, it doesn't have to be about fixing everything.\nWhat feels more possible right now?",
-            chips: ACTION_CHIPS,
-          });
         }
         break;
       }
-
-      case 'action': {
-        const reply = chipLabel === "I don't know"
-          ? "That's okay.\nEven knowing you need something different here\nis already a start."
-          : "That sounds like a solid next step.\nEven small shifts can change how heavy things feel.";
-        useConversationStore.getState().addMessage({ role: 'app', text: reply });
-        transition('closure');
-        runClosureSequence();
-        break;
-      }
-
       default:
         console.warn(`[FlowController] Chip tapped in unexpected state: ${state.currentStep}`);
     }
   }, []);
 
-  // ── handleDismissUntangle ────────────────────────────────────────────────
   const handleDismissUntangle = useCallback(() => {
     const state = useConversationStore.getState();
-    transition('post_untangle_choice');
+
+    transition('post_untangle');
 
     if (state.llmUntangle) {
-      state.addMessage({ role: 'app', text: state.llmUntangle, label: 'untangle' });
+
+      state.addMessage({
+
+        role: 'app',
+
+        text: state.llmUntangle,
+
+        type: 'chat',
+
+      });
+
     }
     state.addMessage({ role: 'app', text: 'Sit with that for a second.' });
 
@@ -428,6 +411,5 @@ Line 2 starts with "it feels less like"`,
       });
     }, 1000);
   }, []);
-
   return { handleUserInput, handleChipSelect, handleDismissUntangle };
 }

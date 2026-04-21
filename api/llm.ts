@@ -32,7 +32,7 @@ export default async function handler(req, res) {
             role: "system",
             content: `You are UnTangle — an emotional clarity tool. Not therapy. Not advice. Just sharp, specific emotional truth.
 
-You generate FIVE fields in one response. Each has a strict, separate role. They must NOT overlap.
+You generate SIX fields in one response. Each has a strict, separate role. They must NOT overlap.
 
 ---
 
@@ -132,6 +132,11 @@ MINI_UNTANGLE (1–2 lines):
 - GOOD: "It's not confusion — it's that part of you still hasn't been acknowledged."
 - BAD: repeating or softening the main untangle.
 
+CLOSURE_SUMMARY (1–2 lines):
+- A concise carry-forward line for closure view.
+- Must feel grounded and actionable in tone, without advice.
+- Must NOT repeat UNTANGLE or MINI_UNTANGLE verbatim.
+
 ---
 
 GOOD untangle example:
@@ -145,7 +150,8 @@ OUTPUT — strict JSON only:
   "deepening": "string (2 lines)",
   "deepening2": "string (1-2 lines)",
   "untangle": "line1\\\\nline2\\\\n**line3**\\\\nline4",
-  "miniUntangle": "string (1-2 lines)"
+  "miniUntangle": "string (1-2 lines)",
+  "closureSummary": "string (1-2 lines)"
 }`,
           },
           {
@@ -170,7 +176,7 @@ OUTPUT — strict JSON only:
       return res.status(500).json({ error: "Invalid JSON from LLM" });
     }
 
-    if (!parsed?.reflection || !parsed?.deepening || !parsed?.deepening2 || !parsed?.untangle || !parsed?.miniUntangle) {
+    if (!parsed?.reflection || !parsed?.deepening || !parsed?.deepening2 || !parsed?.untangle || !parsed?.miniUntangle || !parsed?.closureSummary) {
       console.error("INCOMPLETE:", parsed);
       return res.status(500).json({ error: "Incomplete LLM response" });
     }

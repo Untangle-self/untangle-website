@@ -19,11 +19,13 @@ interface ConversationState {
   llmDeepening2: string;
   llmUntangle: string;
   llmMiniUntangle: string;
+  llmClosureSummary: string;
 
   lockedChipSelections: Record<number, string[]>;
   activeChipsMsgIndex: number | null;
 
   loopCount: number;
+  currentView: 'chat' | 'closure' | 'summary';
 
   // actions
   addMessage: (msg: Omit<Message, 'id'>) => void;
@@ -36,9 +38,10 @@ interface ConversationState {
   setDynamicAlignmentOptions: (opts: string[]) => void;
 
   setStep: (step: FlowState) => void;
-  setLLMContent: (reflection: string, deepening: string, deepening2: string, untangle: string, miniUntangle: string) => void;
+  setLLMContent: (reflection: string, deepening: string, deepening2: string, untangle: string, miniUntangle: string, closureSummary: string) => void;
 
   incrementLoopCount: () => void;
+  setCurrentView: (view: 'chat' | 'closure' | 'summary') => void;
   reset: () => void;
 }
 
@@ -60,11 +63,13 @@ const initialState = {
   llmDeepening2: '',
   llmUntangle: '',
   llmMiniUntangle: '',
+  llmClosureSummary: '',
 
   lockedChipSelections: {},
   activeChipsMsgIndex: null,
 
   loopCount: 0,
+  currentView: 'chat' as 'chat' | 'closure' | 'summary',
 };
 
 export const useConversationStore = create<ConversationState>((set) => ({
@@ -79,6 +84,7 @@ export const useConversationStore = create<ConversationState>((set) => ({
           role: msg.role,
           text: msg.text,
           label: msg.label,
+          type: msg.type,
           chips: msg.chips ?? undefined,
         },
       ],
@@ -105,13 +111,15 @@ export const useConversationStore = create<ConversationState>((set) => ({
 
   setStep: (step) => set({ currentStep: step }),
 
-  setLLMContent: (reflection, deepening, deepening2, untangle, miniUntangle) =>
-    set({ llmReflection: reflection, llmDeepening: deepening, llmDeepening2: deepening2, llmUntangle: untangle, llmMiniUntangle: miniUntangle }),
+  setLLMContent: (reflection, deepening, deepening2, untangle, miniUntangle, closureSummary) =>
+    set({ llmReflection: reflection, llmDeepening: deepening, llmDeepening2: deepening2, llmUntangle: untangle, llmMiniUntangle: miniUntangle, llmClosureSummary: closureSummary }),
 
   incrementLoopCount: () =>
     set((state) => ({
       loopCount: state.loopCount + 1,
     })),
+
+  setCurrentView: (view) => set({ currentView: view }),
 
   reset: () => set(initialState),
 }));

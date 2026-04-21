@@ -14,9 +14,11 @@ export type FlowState =
   | 'alignment_choice'
   | 'deepening_2'
   | 'untangle'
-  | 'post_untangle_choice'
-  | 'mini_untangle'
-  | 'action'
+  | 'post_untangle'
+  | 'mini_untangle_understand'
+  | 'mini_untangle_act'
+  | 'mini_untangle_hold'
+  | 'decision_layer'
   | 'closure'
   | 'clarity';
 
@@ -24,18 +26,20 @@ export type FlowState =
 export type FlowStep = FlowState;
 
 export const VALID_TRANSITIONS: Record<FlowState, FlowState[]> = {
-  start:                ['input'],
-  input:                ['reflection', 'deepening_2'],
-  reflection:           ['alignment_choice'],
-  deepening_1:          ['deepening_2', 'input'],
-  alignment_choice:     ['deepening_1', 'input'],
-  deepening_2:          ['untangle'],
-  untangle:             ['post_untangle_choice'],
-  post_untangle_choice: ['closure', 'mini_untangle', 'action'],
-  mini_untangle:        ['closure'],
-  action:               ['closure'],
-  closure:              [],
-  clarity:              ['input'],
+  start:                    ['input'],
+  input:                    ['reflection', 'deepening_2'],
+  reflection:               ['alignment_choice'],
+  deepening_1:              ['deepening_2', 'input'],
+  alignment_choice:         ['deepening_1', 'input'],
+  deepening_2:              ['untangle'],
+  untangle:                 ['post_untangle'],
+  post_untangle:            ['mini_untangle_understand', 'mini_untangle_act', 'mini_untangle_hold'],
+  mini_untangle_understand: ['decision_layer'],
+  mini_untangle_act:        ['decision_layer'],
+  mini_untangle_hold:       ['decision_layer'],
+  decision_layer:           ['closure', 'deepening_2', 'mini_untangle_act'],
+  closure:                  ['clarity'],
+  clarity:                  ['input'],
 };
 
 export function assertTransition(from: FlowState, to: FlowState): void {
@@ -52,6 +56,8 @@ export interface ChipOption {
   label: string;
 }
 
+export type MessageType = 'chat' | 'inline-untangle' | 'mini-untangle' | 'closure-card' | 'summary-card';
+
 export interface Message {
   id: string;
   role: MessageRole;
@@ -59,6 +65,7 @@ export interface Message {
 
   // Optional UI helpers
   label?: string;
+  type?: MessageType;
 
   // ✅ Chips (used by ChatThread)
   chips?: ChipOption[];
