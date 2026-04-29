@@ -3,7 +3,7 @@ export default async function handler(
   res: { status: (c: number) => { json: (b: unknown) => void } },
 ) {
   const { userInput, reflection, deepening } = req.body;
-  const apiKey = "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";
+  const apiKey = "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";
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
