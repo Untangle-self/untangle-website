@@ -14,11 +14,11 @@ export type FlowState =
   | 'alignment_choice'
   | 'deepening_2'
   | 'untangle'
-  | 'post_untangle'
+  | 'POST_UNTANGLE_MODE'
   | 'mini_untangle_understand'
   | 'mini_untangle_act'
   | 'mini_untangle_hold'
-  | 'decision_layer'
+  | 'post_mini_untangle'
   | 'closure'
   | 'clarity';
 
@@ -32,12 +32,12 @@ export const VALID_TRANSITIONS: Record<FlowState, FlowState[]> = {
   deepening_1:              ['deepening_2', 'input'],
   alignment_choice:         ['deepening_1', 'input'],
   deepening_2:              ['untangle'],
-  untangle:                 ['post_untangle'],
-  post_untangle:            ['mini_untangle_understand', 'mini_untangle_act', 'mini_untangle_hold'],
-  mini_untangle_understand: ['decision_layer'],
-  mini_untangle_act:        ['decision_layer'],
-  mini_untangle_hold:       ['decision_layer'],
-  decision_layer:           ['closure', 'deepening_2', 'mini_untangle_act'],
+  untangle:                 ['POST_UNTANGLE_MODE'],
+  POST_UNTANGLE_MODE:       ['mini_untangle_understand', 'mini_untangle_act', 'mini_untangle_hold'],
+  mini_untangle_understand: ['post_mini_untangle'],
+  mini_untangle_act:        ['post_mini_untangle'],
+  mini_untangle_hold:       ['post_mini_untangle'],
+  post_mini_untangle:       ['closure'],
   closure:                  ['clarity'],
   clarity:                  ['input'],
 };
@@ -62,6 +62,7 @@ export interface Message {
   id: string;
   role: MessageRole;
   text: string;
+  content?: string;
 
   // Optional UI helpers
   label?: string;

@@ -11,9 +11,8 @@
  *     'parts of it'      → input (clarificationMode) → deepening_2 → untangle
  *     'I don't know'     → input (clarificationMode) → deepening_2 → untangle
  *
- *   untangle → post_untangle
- *     'Understand' / 'Act' / 'Hold' → mini_untangle_* → decision_layer (chips)
- *     decision_layer: sit with this → deepening_2; do something small → mini_untangle_act; leave it here → closure view
+ *   untangle → POST_UNTANGLE_MODE
+ *     mode selection → mini_untangle_* → closure
  */
 import { useCallback } from 'react';
 import { useConversationStore } from '../store/conversationStore';
@@ -47,17 +46,10 @@ const POST_UNTANGLE_CHIPS = [
 
 ];
 
-const DECISION_CHIPS = [
-
-  { id: 'dc1', label: 'sit with this' },
-  { id: 'dc2', label: 'do something small' },
-  { id: 'dc3', label: 'leave it here' },
-
-];
-
 // ── Transition helper ────────────────────────────────────────────────────────
 
 const isProcessingRef = { current: false };
+const isMiniUntangleProcessingRef = { current: false };
 
 function transition(to: FlowState): void {
   const { currentStep, setStep } = useConversationStore.getState();
@@ -75,9 +67,6 @@ function transition(to: FlowState): void {
       isProcessingRef.current = false;
     });
   }
-  if (to === 'mini_untangle_understand') runMiniUntangle();
-  if (to === 'mini_untangle_act') runMiniUntangle();
-  if (to === 'mini_untangle_hold') runMiniUntangle();
 }
 
 function delay(ms: number) {
@@ -118,11 +107,8 @@ async function runDeepening2ThenUntangle() {
 
   await delay(1200);
 
-  await delay(1200);
-
-  s.addMessage({ role: 'app', text: llmDeepening2 });
-
   useConversationStore.getState().setTyping(false);
+  s.addMessage({ role: 'app', text: llmDeepening2 });
 
   await delay(2000);
 
@@ -146,6 +132,7 @@ async function runDeepening1() {
   s.setTyping(true);
 
   await delay(1200);
+  s.setTyping(false);
 
   s.addMessage({
 
@@ -160,43 +147,36 @@ async function runDeepening1() {
     ],
   });
 
-  s.setTyping(false);
-
 }
 
 async function runMiniUntangle() {
-
+  if (isMiniUntangleProcessingRef.current) return;
+  isMiniUntangleProcessingRef.current = true;
+  console.log("RUNNING MINI UNTANGLE");
   const s = useConversationStore.getState();
-  s.setTyping(true);
-  await delay(1200);
   if (s.llmMiniUntangle) {
 
     s.addMessage({
-
       role: 'app',
-
       text: s.llmMiniUntangle,
+      type: 'mini-untangle',
+    });
 
-      type: 'chat',
+    transition('post_mini_untangle');
 
+    await delay(800);
+
+    useConversationStore.getState().addMessage({
+      role: 'app',
+      text: 'Where do you want to go from here?',
+      chips: [
+        { id: 'pmu1', label: 'leave it here' },
+        { id: 'pmu2', label: 'sit with this a bit more' },
+      ],
     });
 
   }
-  s.setTyping(false);
-
-  await delay(800);
-
-  s.addMessage({
-
-    role: 'app',
-
-    text: 'What feels right from here?',
-
-    chips: DECISION_CHIPS,
-
-  });
-
-  transition('decision_layer');
+  isMiniUntangleProcessingRef.current = false;
 }
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
@@ -215,6 +195,7 @@ export function useFlowController() {
       const cs = useConversationStore.getState();
 
       const originalInput = cs.messages.find(m => m.role === 'user')?.text ?? text;
+      state.setTyping(true);
 
       const res: any = await callLLM({
 
@@ -225,6 +206,8 @@ export function useFlowController() {
         currentInput: text,
 
       });
+      console.log("LLM RESPONSE:", res);
+      state.setTyping(false);
 
       if (res?.deepening && res?.deepening2 && res?.untangle && res?.miniUntangle && res?.closureSummary) {
         const safeMiniUntangle = sanitizeMiniUntangle(
@@ -237,6 +220,7 @@ export function useFlowController() {
         state.setLLMContent(
 
           state.llmReflection,
+          state.llmAlignment,
 
           res.deepening,
 
@@ -258,7 +242,10 @@ export function useFlowController() {
 
     if (state.currentStep === 'start') transition('input');
     transition('reflection');
+    state.setTyping(true);
     const res: any = await callLLM({ userInput: text });
+    console.log("LLM RESPONSE:", res);
+    state.setTyping(false);
 
     const safeMiniUntangle = sanitizeMiniUntangle(
       res.miniUntangle,
@@ -270,6 +257,7 @@ export function useFlowController() {
     state.setLLMContent(
 
       res.reflection,
+      res.alignment,
 
       res.deepening,
 
@@ -284,28 +272,21 @@ export function useFlowController() {
 
     state.addMessage({ role: 'app', text: res.reflection });
 
+    state.setTyping(true);
     const opts = await generateAlignmentOptions(text, res.reflection, res.deepening);
+    state.setTyping(false);
 
     state.setDynamicAlignmentOptions([opts.option1, opts.option2]);
-
     state.addMessage({
-
       role: 'app',
-
-      text: res.deepening,
-
+      text: '',
+      content: res.alignment,
       chips: [
-
         { id: 'a1', label: opts.option1 },
-
         { id: 'a2', label: opts.option2 },
-
         { id: 'a3', label: 'something else' },
-
         { id: 'a4', label: "I don't know" },
-
       ],
-
     });
 
     transition('alignment_choice');
@@ -347,37 +328,36 @@ export function useFlowController() {
         break;
       }
 
-      case 'post_untangle': {
+      case 'POST_UNTANGLE_MODE': {
 
         if (chipLabel === 'understand this feeling a bit more') {
 
           transition('mini_untangle_understand');
+          await runMiniUntangle();
 
-        } else if (chipLabel === 'figure out what to do next') {
+        } else if (chipLabel === 'what can I do here') {
 
           transition('mini_untangle_act');
+          await runMiniUntangle();
 
         } else {
 
           transition('mini_untangle_hold');
+          await runMiniUntangle();
 
         }
 
         break;
       }
 
-      case 'decision_layer': {
-        if (chipLabel === 'sit with this') {
-          transition('deepening_2');
-          runDeepening2ThenUntangle();
-        } else if (chipLabel === 'do something small') {
-          transition('mini_untangle_act');
-        } else if (chipLabel === 'leave it here') {
-          useConversationStore.getState().setCurrentView('closure');
-          transition('closure');
-        }
+      case 'post_mini_untangle': {
+        const s = useConversationStore.getState();
+        s.addMessage({ role: 'user', text: chipLabel });
+        s.setCurrentView('closure');
+        transition('closure');
         break;
       }
+
       default:
         console.warn(`[FlowController] Chip tapped in unexpected state: ${state.currentStep}`);
     }
@@ -385,8 +365,9 @@ export function useFlowController() {
 
   const handleDismissUntangle = useCallback(() => {
     const state = useConversationStore.getState();
+    if (state.currentStep !== 'untangle') return;
 
-    transition('post_untangle');
+    transition('POST_UNTANGLE_MODE');
 
     if (state.llmUntangle) {
 

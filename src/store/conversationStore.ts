@@ -15,6 +15,7 @@ interface ConversationState {
   dynamicAlignmentOptions: string[];
 
   llmReflection: string;
+  llmAlignment: string;
   llmDeepening: string;
   llmDeepening2: string;
   llmUntangle: string;
@@ -38,7 +39,7 @@ interface ConversationState {
   setDynamicAlignmentOptions: (opts: string[]) => void;
 
   setStep: (step: FlowState) => void;
-  setLLMContent: (reflection: string, deepening: string, deepening2: string, untangle: string, miniUntangle: string, closureSummary: string) => void;
+  setLLMContent: (reflection: string, alignment: string, deepening: string, deepening2: string, untangle: string, miniUntangle: string, closureSummary: string) => void;
 
   incrementLoopCount: () => void;
   setCurrentView: (view: 'chat' | 'closure' | 'summary') => void;
@@ -59,6 +60,7 @@ const initialState = {
   dynamicAlignmentOptions: [] as string[],
 
   llmReflection: '',
+  llmAlignment: '',
   llmDeepening: '',
   llmDeepening2: '',
   llmUntangle: '',
@@ -83,6 +85,7 @@ export const useConversationStore = create<ConversationState>((set) => ({
           id: crypto.randomUUID(),
           role: msg.role,
           text: msg.text,
+          content: msg.content,
           label: msg.label,
           type: msg.type,
           chips: msg.chips ?? undefined,
@@ -111,8 +114,8 @@ export const useConversationStore = create<ConversationState>((set) => ({
 
   setStep: (step) => set({ currentStep: step }),
 
-  setLLMContent: (reflection, deepening, deepening2, untangle, miniUntangle, closureSummary) =>
-    set({ llmReflection: reflection, llmDeepening: deepening, llmDeepening2: deepening2, llmUntangle: untangle, llmMiniUntangle: miniUntangle, llmClosureSummary: closureSummary }),
+  setLLMContent: (reflection, alignment, deepening, deepening2, untangle, miniUntangle, closureSummary) =>
+    set({ llmReflection: reflection, llmAlignment: alignment, llmDeepening: deepening, llmDeepening2: deepening2, llmUntangle: untangle, llmMiniUntangle: miniUntangle, llmClosureSummary: closureSummary }),
 
   incrementLoopCount: () =>
     set((state) => ({

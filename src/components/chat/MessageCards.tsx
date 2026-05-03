@@ -5,6 +5,7 @@ import OptionChips from '../controls/OptionChips';
 
 interface CardProps {
   text: string;
+  content?: string;
   chips?: ChipOption[];
   selectedIds: string[];
   disabled: boolean;
@@ -15,7 +16,7 @@ interface BubbleProps extends CardProps {
   isUser: boolean;
 }
 
-function ChipsSection({ chips, selectedIds, disabled, onSelect }: Omit<CardProps, 'text'> & { align?: 'left' | 'center' }) {
+function ChipsSection({ chips, selectedIds, disabled, onSelect }: Omit<CardProps, 'text' | 'content'> & { align?: 'left' | 'center' }) {
   if (!chips || chips.length === 0) return null;
   return (
     <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid rgba(120,100,80,0.12)' }}>
@@ -128,7 +129,7 @@ export function SummaryCard({ text, chips, selectedIds, disabled, onSelect }: Ca
   );
 }
 
-export function ChatBubble({ text, chips, selectedIds, disabled, onSelect, isUser }: BubbleProps) {
+export function ChatBubble({ text, content, chips, selectedIds, disabled, onSelect, isUser }: BubbleProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -146,10 +147,11 @@ export function ChatBubble({ text, chips, selectedIds, disabled, onSelect, isUse
         wordBreak: 'break-word',
       }}
     >
-      {isUser ? (
-        <span>{text}</span>
-      ) : (
-        <InlineRichText text={text} />
+      {isUser ? <span>{text}</span> : <InlineRichText text={text} />}
+      {!isUser && content && (
+        <div style={{ marginTop: text ? '10px' : 0 }}>
+          <InlineRichText text={content} />
+        </div>
       )}
       <ChipsSection chips={chips} selectedIds={selectedIds} disabled={disabled} onSelect={onSelect} />
     </motion.div>

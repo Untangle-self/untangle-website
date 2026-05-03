@@ -7,8 +7,10 @@ interface Props {
 }
 
 // Renders text with controlled spacing: \n\n → small gap, \n → line break, **...** → bold-italic
-export function InlineRichText({ text }: { text: string }) {
-  const paragraphs = text.split('\n\n');
+export function InlineRichText({ text }: { text?: string }) {
+  if (!text) return null;
+  const safeText = typeof text === 'string' ? text : '';
+  const paragraphs = safeText.split('\n\n');
   return (
     <>
       {paragraphs.map((para, pi) => (
@@ -33,6 +35,7 @@ export function InlineRichText({ text }: { text: string }) {
 }
 
 export function MessageBubble({ message, footer }: Props) {
+  if (!message?.text) return null;
   const isApp = message.role === 'app';
   const isUntangle = Boolean(message.label);
 

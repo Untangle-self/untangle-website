@@ -73,7 +73,7 @@ export default function ChatThread({ onChipSelect }: Props) {
             case 'mini-untangle':   return <MiniUntangleCard   text={msg.text} {...chipProps} />;
             case 'closure-card':    return <ClosureCard         text={msg.text} {...chipProps} />;
             case 'summary-card':    return <SummaryCard         text={msg.text} {...chipProps} />;
-            default:                return <ChatBubble          text={msg.text} isUser={isUser} {...chipProps} />;
+            default:                return <ChatBubble          text={msg.text} content={msg.content} isUser={isUser} {...chipProps} />;
           }
         })();
 
@@ -92,9 +92,7 @@ export default function ChatThread({ onChipSelect }: Props) {
           </div>
         );
       })}
-      <div className="typing-container" style={{ minHeight: 24, alignSelf: 'flex-start' }}>
-        {isTyping && <TypingIndicator />}
-      </div>
+      {isTyping && <TypingIndicator />}
     </div>
   );
 }
