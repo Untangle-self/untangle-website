@@ -50,6 +50,56 @@ const POST_UNTANGLE_CHIPS = [
 
 const isProcessingRef = { current: false };
 const isMiniUntangleProcessingRef = { current: false };
+const selectedModeRef = { current: '' as 'understand' | 'act' | 'hold' | '' };
+
+async function generateModeDeepening(mode: string, untangle: string, deepening2: string, currentInput: string): Promise<string> {
+  const modeContext = {
+    understand: "Deepen emotional clarity. Stay with the feeling — do not explain or interpret it. Name what the user is still holding, not what it means.",
+    act:        "Surface the tension around action. Do NOT suggest anything to do. Name what makes action feel impossible or beside the point, grounded in what was just surfaced.",
+    hold:       "Stabilize and soften pressure. Do NOT push forward. Name what it is to stay here — reduce the weight of not knowing, without resolving it.",
+  }[mode] ?? "";
+
+  const prompt = `You are generating a mode-deepening line for an emotional clarity tool. This follows the same rules as Deepening 1.
+
+CONTEXT:
+Core insight (untangle): ${untangle}
+Prior synthesis (deepening2): ${deepening2}
+Latest user input: ${currentInput}
+User selected mode: "${mode}"
+Mode instruction: ${modeContext}
+
+STRICT RULES:
+- 1–2 lines maximum
+- Must be grounded in the specific untangle above — NOT generic
+- Must NOT repeat or rephrase the untangle
+- Must stay consistent with the untangle, but can extend or reframe it to match the selected mode. Do NOT introduce unrelated narrative.
+- Must NOT give advice, suggestions, or solutions
+- Must shift the user's position within the selected mode — not outside it
+- Must reflect the user's most recent input if it shifts the interpretation.
+- This line comes AFTER the user has selected a mode. It should feel like a continuation of the insight in that direction, not a fresh interpretation.
+- No metaphors, no abstract nouns, no therapy language
+- Prefer contrast when it fits, but do NOT force a fixed pattern. Vary phrasing naturally.
+- BANNED: "maybe", "perhaps", "try", "could help", "sometimes", "often", "it's natural"
+- BAD: "maybe something small could help you move forward"
+- BAD: "sometimes sitting with it is enough"
+- GOOD: "it's not that you don't know what to do — it's that nothing feels like it would actually change the outcome"
+
+Return ONLY the line(s). No quotes, no explanation.`;
+
+  const res = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
+  });
+  if (!res.ok) throw new Error('Mode deepening generation failed');
+  const data = await res.json();
+  return data.text?.trim() ?? '';
+}
+
+const MODE_DEEPENING_CHIPS = [
+  { id: 'md1', label: 'that fits' },
+  { id: 'md2', label: 'not quite' },
+];
 
 function transition(to: FlowState): void {
   const { currentStep, setStep } = useConversationStore.getState();
@@ -187,7 +237,7 @@ export function useFlowController() {
     if (!text.trim()) return;
 
     const state = useConversationStore.getState();
-    state.addMessage({ role: 'user', text });
+    state.addMessage({ role: 'user', text, source: 'input' });
 
     if (state.clarificationMode) {
       state.setClarificationMode(false);
@@ -293,7 +343,7 @@ export function useFlowController() {
 
   }, []);
 
-  const handleChipSelect = useCallback(async (chipLabel: string) => {
+  const handleChipSelect = useCallback(async (chipId: string, chipLabel: string) => {
     const state = useConversationStore.getState();
 
     switch (state.currentStep) {
@@ -303,6 +353,7 @@ export function useFlowController() {
         useConversationStore.getState().addMessage({
           role: 'user',
           text: chipLabel,
+          source: 'chip',
         });
 
         transition('deepening_1');
@@ -311,6 +362,8 @@ export function useFlowController() {
       }
 
       case 'deepening_1': {
+        state.addMessage({ role: 'user', text: chipLabel, source: 'chip' });
+
         if (chipLabel === 'yeah… that fits') {
 
           transition('deepening_2');
@@ -329,32 +382,68 @@ export function useFlowController() {
       }
 
       case 'POST_UNTANGLE_MODE': {
+        useConversationStore.getState().addMessage({ role: 'user', text: chipLabel, source: 'chip' });
 
         if (chipLabel === 'understand this feeling a bit more') {
-
-          transition('mini_untangle_understand');
-          await runMiniUntangle();
-
+          selectedModeRef.current = 'understand';
         } else if (chipLabel === 'what can I do here') {
-
-          transition('mini_untangle_act');
-          await runMiniUntangle();
-
+          selectedModeRef.current = 'act';
         } else {
-
-          transition('mini_untangle_hold');
-          await runMiniUntangle();
-
+          selectedModeRef.current = 'hold';
         }
 
+        transition('mode_deepening');
+
+        const ms = useConversationStore.getState();
+        const latestUserInput = [...ms.messages].reverse().find(
+          m => m.role === 'user' && m.source !== 'chip'
+        )?.text ?? '';
+        ms.setTyping(true);
+        const modeDeepening = await generateModeDeepening(
+          selectedModeRef.current,
+          ms.llmUntangle,
+          ms.llmDeepening2,
+          latestUserInput,
+        );
+        ms.setTyping(false);
+
+        useConversationStore.getState().addMessage({
+          role: 'app',
+          text: modeDeepening,
+          chips: MODE_DEEPENING_CHIPS,
+        });
+
+        break;
+      }
+
+      case 'mode_deepening': {
+        useConversationStore.getState().addMessage({ role: 'user', text: chipLabel, source: 'chip' });
+
+        const mode = selectedModeRef.current;
+        if (mode === 'understand') {
+          transition('mini_untangle_understand');
+        } else if (mode === 'act') {
+          transition('mini_untangle_act');
+        } else {
+          transition('mini_untangle_hold');
+        }
+
+        await runMiniUntangle();
         break;
       }
 
       case 'post_mini_untangle': {
         const s = useConversationStore.getState();
-        s.addMessage({ role: 'user', text: chipLabel });
-        s.setCurrentView('closure');
-        transition('closure');
+        s.addMessage({ role: 'user', text: chipLabel, source: 'chip' });
+        if (chipId === 'pmu1') {
+          s.setCurrentView('closure');
+          transition('closure');
+        } else if (chipId === 'pmu2') {
+          await runMiniUntangle();
+        } else {
+          s.setCurrentView('closure');
+          transition('closure');
+        }
         break;
       }
 

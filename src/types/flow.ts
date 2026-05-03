@@ -15,6 +15,7 @@ export type FlowState =
   | 'deepening_2'
   | 'untangle'
   | 'POST_UNTANGLE_MODE'
+  | 'mode_deepening'
   | 'mini_untangle_understand'
   | 'mini_untangle_act'
   | 'mini_untangle_hold'
@@ -33,7 +34,8 @@ export const VALID_TRANSITIONS: Record<FlowState, FlowState[]> = {
   alignment_choice:         ['deepening_1', 'input'],
   deepening_2:              ['untangle'],
   untangle:                 ['POST_UNTANGLE_MODE'],
-  POST_UNTANGLE_MODE:       ['mini_untangle_understand', 'mini_untangle_act', 'mini_untangle_hold'],
+  POST_UNTANGLE_MODE:       ['mode_deepening'],
+  mode_deepening:           ['mini_untangle_understand', 'mini_untangle_act', 'mini_untangle_hold'],
   mini_untangle_understand: ['post_mini_untangle'],
   mini_untangle_act:        ['post_mini_untangle'],
   mini_untangle_hold:       ['post_mini_untangle'],
@@ -67,6 +69,7 @@ export interface Message {
   // Optional UI helpers
   label?: string;
   type?: MessageType;
+  source?: 'chip' | 'input';
 
   // ✅ Chips (used by ChatThread)
   chips?: ChipOption[];

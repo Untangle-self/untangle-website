@@ -5,7 +5,7 @@
  *   - Render the message list
  *   - Show the typing indicator (left-aligned, app-side)
  *   - Handle chip UI lock (local concern)
- *   - Forward chip selections to the flow controller via onChipSelect
+ *   - Forward chip selections (id + label) to the flow controller via onChipSelect
  *
  * Does NOT call LLM. Does NOT make flow decisions.
  */
@@ -22,7 +22,7 @@ import {
 } from './MessageCards';
 
 type Props = {
-  onChipSelect: (label: string) => void;
+  onChipSelect: (chipId: string, chipLabel: string) => void;
 };
 
 export default function ChatThread({ onChipSelect }: Props) {
@@ -63,7 +63,7 @@ export default function ChatThread({ onChipSelect }: Props) {
             const selectedChip = msg.chips?.find((c) => c.label === value);
             if (!selectedChip) return;
             lockChipSelection(index, [selectedChip.id]);
-            onChipSelect(value);
+            onChipSelect(selectedChip.id, selectedChip.label);
           },
         };
 

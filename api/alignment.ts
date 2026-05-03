@@ -1,15 +1,21 @@
-export default async function handler(
+import OpenAI from "openai";
+
+export const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+export default async function handler(  
   req: { body: { userInput: string; reflection: string; deepening: string } },
   res: { status: (c: number) => { json: (b: unknown) => void } },
 ) {
   const { userInput, reflection, deepening } = req.body;
-  const apiKey = "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";
+  //const apiKey = "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";
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer ${openai.apiKey}`,
     },
     body: JSON.stringify({
       model: 'gpt-4o-mini',
