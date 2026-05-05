@@ -2,15 +2,121 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Untangle</title>
+    <style>
+      :root {
+        --bg: #f6f5f2;
+        --surface: #ffffff;
+        --text: #1f2937;
+        --muted: #4b5563;
+        --border: #e5e7eb;
+        --accent: #b08968;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: radial-gradient(circle at top, #fbfaf8, var(--bg) 55%);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 56px 20px 72px;
+      }
+
+      .hero {
+        text-align: center;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 56px 28px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+      }
+
+      h1,
+      h2 {
+        margin: 0 0 14px;
+        line-height: 1.2;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 4.5vw, 3rem);
+      }
+
+      .tagline {
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600;
+        font-size: 0.8rem;
+        margin-bottom: 14px;
+      }
+
+      .lead {
+        max-width: 640px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      section {
+        margin-top: 28px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 28px 24px;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      ol {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+
+      li + li {
+        margin-top: 10px;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <main class="wrap">
+      <header class="hero">
+        <p class="tagline">Untangle</p>
+        <h1>From confusion to clarity</h1>
+        <p class="lead">
+          Untangle is an emotional clarity system that helps you slow down, name what you are feeling, and
+          find grounded next steps. It turns mental noise into a clear path you can actually trust.
+        </p>
+      </header>
+
+      <section>
+        <h2>What it is</h2>
+        <p>
+          A calm reflection space designed to help you move through overwhelm with structure. Untangle combines
+          gentle prompts and practical framing so you can understand what is happening inside, instead of getting
+          stuck in loops.
+        </p>
+      </section>
+
+      <section>
+        <h2>How it works</h2>
+        <ol>
+          <li>Pause and capture what feels heavy or unclear right now.</li>
+          <li>Separate facts, feelings, and needs to reveal what matters most.</li>
+          <li>Choose one simple next action that brings immediate emotional relief.</li>
+        </ol>
+      </section>
+    </main>
   </body>
 </html>
