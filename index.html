@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UnTangle — Clarity for your mind</title>
+    <link rel="icon" type="image/png" href="/public/logo-icon-light.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
@@ -71,10 +72,7 @@
         height: auto;
         display: block;
         margin: 0 auto 44px;
-        /* Invert to white on dark bg.
-           If you have a light-version logo, swap src and remove this. */
-        filter: brightness(0) invert(1);
-        opacity: 0.65;
+        opacity: 1;
       }
  
       .hero-title {
@@ -173,6 +171,8 @@
       .video-frame video {
         display: block;
         width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
         border-radius: 12px;
       }
  
@@ -361,10 +361,10 @@
       }
  
       .footer-icon {
-        width: 14px;
-        height: 14px;
+        width: 18px;
+        height: 18px;
         display: block;
-        opacity: 0.4;
+        opacity: 1;
       }
  
       /* ── Founder photo ────────────────────────────────── */
@@ -637,8 +637,7 @@
       <div class="founder">
  
         <div class="founder-left">
-          <!-- Copy Me.jpg into your /public/ folder as me.jpg -->
-          <img class="founder-photo" src="/public/me.jpg" alt="Barathi S Subbaraman" />
+          <img class="founder-photo" src="/public/Me.png" alt="Barathi S Subbaraman" />
           <div>
             <span class="founder-label">The person behind it</span>
             <p class="founder-name">Barathi S Subbaraman</p>
