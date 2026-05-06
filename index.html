@@ -617,7 +617,7 @@
         <div>
           <div class="video-frame demo-video">
             <video autoplay loop muted playsinline width="100%" id="demo-video">
-              <source src="/public/demo-v2.mp4" type="video/mp4" />
+              <source src="/public/demo-v2.mp4?v=2" type="video/mp4" />
             </video>
           </div>
           <p class="video-caption">From overwhelm to clarity &mdash; a real interaction.</p>
@@ -770,6 +770,45 @@
           });
         });
 
+      })();
+
+      (function () {
+        var DEBUG_VIDEO = true;
+        if (!DEBUG_VIDEO) return;
+
+        var videoEl = document.getElementById('demo-video');
+        var source = videoEl ? videoEl.querySelector('source') : null;
+        var sourceAttr = source ? source.getAttribute('src') : null;
+        var resolvedAbsoluteUrl = source ? new URL(source.getAttribute('src'), window.location.href).href : null;
+
+        // #region agent log
+        fetch('http://127.0.0.1:7422/ingest/37d17456-76cd-486e-9fc1-e522d204b24c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a2110f'},body:JSON.stringify({sessionId:'a2110f',runId:'initial',hypothesisId:'H1',location:'index.html:781',message:'Video source discovered on homepage',data:{pathname:window.location.pathname,videoFound:!!videoEl,sourceFound:!!source,sourceAttr:sourceAttr,resolvedAbsoluteUrl:resolvedAbsoluteUrl},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+
+        if (!videoEl || !sourceAttr || !resolvedAbsoluteUrl) return;
+
+        fetch(resolvedAbsoluteUrl, { method: 'HEAD', cache: 'no-store' }).then(function (response) {
+          // #region agent log
+          fetch('http://127.0.0.1:7422/ingest/37d17456-76cd-486e-9fc1-e522d204b24c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a2110f'},body:JSON.stringify({sessionId:'a2110f',runId:'initial',hypothesisId:'H2',location:'index.html:788',message:'Resolved absolute video URL status check',data:{sourceAttr:sourceAttr,resolvedAbsoluteUrl:resolvedAbsoluteUrl,status:response.status,ok:response.ok,contentType:response.headers.get('content-type')},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+        }).catch(function (error) {
+          // #region agent log
+          fetch('http://127.0.0.1:7422/ingest/37d17456-76cd-486e-9fc1-e522d204b24c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a2110f'},body:JSON.stringify({sessionId:'a2110f',runId:'initial',hypothesisId:'H2',location:'index.html:793',message:'Resolved absolute video URL status check failed',data:{sourceAttr:sourceAttr,resolvedAbsoluteUrl:resolvedAbsoluteUrl,error:String(error)},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+        });
+
+        videoEl.addEventListener('loadeddata', function () {
+          // #region agent log
+          fetch('http://127.0.0.1:7422/ingest/37d17456-76cd-486e-9fc1-e522d204b24c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a2110f'},body:JSON.stringify({sessionId:'a2110f',runId:'initial',hypothesisId:'H3',location:'index.html:799',message:'Video loadeddata event fired',data:{resolvedAbsoluteUrl:resolvedAbsoluteUrl,currentSrc:videoEl.currentSrc,readyState:videoEl.readyState,networkState:videoEl.networkState},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+        });
+
+        videoEl.addEventListener('error', function () {
+          var mediaError = videoEl.error;
+          // #region agent log
+          fetch('http://127.0.0.1:7422/ingest/37d17456-76cd-486e-9fc1-e522d204b24c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a2110f'},body:JSON.stringify({sessionId:'a2110f',runId:'initial',hypothesisId:'H4',location:'index.html:806',message:'Video error event fired',data:{resolvedAbsoluteUrl:resolvedAbsoluteUrl,currentSrc:videoEl.currentSrc,errorCode:mediaError?mediaError.code:null,errorMessage:mediaError?mediaError.message:null,readyState:videoEl.readyState,networkState:videoEl.networkState},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+        });
       })();
     </script>
   </body>
