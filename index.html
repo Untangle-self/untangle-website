@@ -3,15 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Untangle</title>
+    <title>UnTangle</title>
     <style>
       :root {
-        --bg: #f6f5f2;
+        --bg: #f7f7f5;
         --surface: #ffffff;
-        --text: #1f2937;
-        --muted: #4b5563;
-        --border: #e5e7eb;
-        --accent: #b08968;
+        --text: #18181b;
+        --muted: #5e6066;
+        --shadow: 0 18px 42px rgba(24, 24, 27, 0.08);
       }
 
       * {
@@ -20,121 +19,159 @@
 
       body {
         margin: 0;
-        font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background: radial-gradient(circle at top, #fbfaf8, var(--bg) 55%);
+        min-height: 100vh;
+        background: var(--bg);
         color: var(--text);
-        line-height: 1.6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.5;
       }
 
-      .wrap {
-        max-width: 860px;
+      main {
+        max-width: 880px;
         margin: 0 auto;
-        padding: 56px 20px 72px;
-      }
-
-      .hero {
+        padding: 64px 24px 80px;
         text-align: center;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        padding: 56px 28px;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-      }
-
-      h1,
-      h2 {
-        margin: 0 0 14px;
-        line-height: 1.2;
-      }
-
-      h1 {
-        font-size: clamp(2rem, 4.5vw, 3rem);
-      }
-
-      .tagline {
-        color: var(--accent);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-weight: 600;
-        font-size: 0.8rem;
-        margin-bottom: 14px;
-      }
-
-      .lead {
-        max-width: 640px;
-        margin: 0 auto;
-        color: var(--muted);
-        font-size: 1.05rem;
       }
 
       section {
-        margin-top: 28px;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 28px 24px;
+        margin-top: 92px;
+      }
+
+      .hero {
+        margin-top: 0;
+      }
+
+      .hero-logo {
+        width: min(190px, 42vw);
+        height: auto;
+        display: block;
+        margin: 0 auto 34px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.2rem, 5.2vw, 4rem);
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+        font-weight: 700;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: clamp(1.4rem, 2.7vw, 2rem);
+        line-height: 1.2;
+        letter-spacing: -0.015em;
+        font-weight: 650;
       }
 
       p {
         margin: 0;
       }
 
-      ol {
-        margin: 0;
-        padding-left: 1.2rem;
-      }
-
-      li + li {
-        margin-top: 10px;
+      .hero-copy {
+        max-width: 670px;
+        margin: 24px auto 0;
+        font-size: clamp(1.05rem, 1.9vw, 1.2rem);
+        color: var(--muted);
       }
 
       .cta {
-        text-align: center;
+        display: inline-block;
+        margin-top: 34px;
+        padding: 12px 28px;
+        border: 0;
+        border-radius: 999px;
+        background: #1f2024;
+        color: #ffffff;
+        font-size: 0.97rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
       }
 
-      .cta-badge {
-        display: inline-block;
-        margin-top: 8px;
-        padding: 10px 16px;
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        background: #faf8f5;
-        color: #374151;
-        font-weight: 600;
+      .section-copy {
+        max-width: 720px;
+        margin: 18px auto 0;
+        font-size: 1.06rem;
+        color: var(--muted);
+      }
+
+      .demo-box {
+        max-width: 680px;
+        margin: 26px auto 0;
+        padding: 82px 20px;
+        background: var(--surface);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        font-size: 1.08rem;
+        color: #60636a;
+      }
+
+      .steps {
+        max-width: 640px;
+        margin: 28px auto 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 20px;
+      }
+
+      .steps li {
+        font-size: 1.08rem;
+        color: #303138;
+      }
+
+      footer {
+        margin-top: 104px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        color: #6c6f76;
+        font-size: 0.95rem;
+      }
+
+      .footer-icon {
+        width: 18px;
+        height: 18px;
+        display: block;
       }
     </style>
   </head>
   <body>
-    <main class="wrap">
-      <header class="hero">
-        <p class="tagline">Untangle</p>
+    <main>
+      <section class="hero">
+        <img class="hero-logo" src="/public/logo-primary.png" alt="UnTangle logo" />
         <h1>From confusion to clarity</h1>
-        <p class="lead">A space to process what you're feeling and find clarity</p>
-      </header>
+        <p class="hero-copy">A structured way to understand what you feel, without getting stuck in loops.</p>
+        <button class="cta" type="button">Coming soon</button>
+      </section>
+
+      <section>
+        <h2>See how it works</h2>
+        <div class="demo-box">Demo coming soon</div>
+        <p class="section-copy">A quick look at how UnTangle helps you move from overwhelm to clarity.</p>
+      </section>
 
       <section>
         <h2>What it is</h2>
-        <p>
-          A calm reflection space designed to help you move through overwhelm with structure. Untangle combines
-          gentle prompts and practical framing so you can understand what is happening inside, instead of getting
-          stuck in loops.
+        <p class="section-copy">
+          UnTangle is a structured reflection system that helps you process emotional noise into clear understanding.
         </p>
       </section>
 
       <section>
         <h2>How it works</h2>
-        <ol>
-          <li>Pause and write down what feels heavy right now.</li>
-          <li>Sort your thoughts into feelings, facts, and needs.</li>
-          <li>Pick one small next step to move forward with clarity.</li>
+        <ol class="steps">
+          <li>1. Write what feels tangled</li>
+          <li>2. Break it into parts</li>
+          <li>3. See the pattern clearly</li>
         </ol>
       </section>
 
-      <section class="cta">
-        <h2>Coming soon</h2>
-        <p>We are crafting a guided experience to help you find emotional clarity, one step at a time.</p>
-        <p class="cta-badge">Coming soon</p>
-      </section>
+      <footer>
+        <img class="footer-icon" src="/public/logo-icon-dark.png" alt="" aria-hidden="true" />
+        <p>Built for clarity</p>
+      </footer>
     </main>
   </body>
 </html>
