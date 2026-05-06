@@ -735,7 +735,7 @@
           var submitButton = form.querySelector('.waitlist-btn');
           if (submitButton) submitButton.disabled = true;
 
-          fetch('PASTE_WEBHOOK_URL_HERE', {
+          fetch('https://hooks.zapier.com/hooks/catch/10548864/4y3dpz9/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email })
