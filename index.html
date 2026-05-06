@@ -6,12 +6,11 @@
     <title>UnTangle</title>
     <style>
       :root {
-        --bg: #f4efe8;
-        --text: #111111;
-        --muted: #5f5a52;
-        --soft: #7a746c;
-        --accent: #7a8b7a;
-        --accent-soft: #eef2ee;
+        --bg: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --soft: #94a3b8;
+        --accent: #2563eb;
       }
 
       * {
@@ -24,22 +23,27 @@
         background: var(--bg);
         color: var(--text);
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        line-height: 1.6;
+        line-height: 1.5;
+        font-weight: 400;
       }
 
       main {
-        max-width: 900px;
+        max-width: 1000px;
         margin: 0 auto;
         padding: 72px 28px 84px;
         text-align: center;
       }
 
       section {
-        margin-top: 96px;
+        margin-top: 64px;
       }
 
       .hero {
         margin-top: 0;
+      }
+
+      .content-section {
+        text-align: left;
       }
 
       .hero-logo {
@@ -51,20 +55,20 @@
 
       h1 {
         margin: 0;
-        font-size: clamp(2.1rem, 5vw, 3.7rem);
-        line-height: 1.12;
+        font-size: clamp(2rem, 4.2vw, 3.2rem);
+        line-height: 1.15;
         letter-spacing: -0.03em;
-        font-weight: 680;
-        color: #0f0f0f;
+        font-weight: 600;
+        color: var(--text);
       }
 
       h2 {
         margin: 0;
         font-size: clamp(1.35rem, 2.6vw, 1.95rem);
-        line-height: 1.2;
+        line-height: 1.25;
         letter-spacing: -0.015em;
-        font-weight: 640;
-        color: #2a2f2a;
+        font-weight: 550;
+        color: var(--text);
       }
 
       p {
@@ -80,16 +84,22 @@
 
       .section-copy {
         max-width: 740px;
-        margin: 20px auto 0;
+        margin: 14px 0 0;
         font-size: 1.06rem;
         color: var(--muted);
       }
 
+      .demo-and-why {
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: minmax(0, 520px) minmax(0, 1fr);
+        gap: 44px;
+        align-items: start;
+      }
+
       .demo-wrap {
-        margin-top: 24px;
-        background: var(--accent-soft);
-        padding: 16px;
-        border-radius: 20px;
+        padding: 8px;
+        border-radius: 14px;
       }
 
       video {
@@ -99,38 +109,36 @@
       }
 
       .steps {
-        max-width: 680px;
-        margin: 28px auto 0;
+        max-width: 740px;
+        margin: 14px 0 0;
         padding: 0;
         list-style: none;
         display: grid;
-        gap: 22px;
+        gap: 16px;
       }
 
       .steps li {
         font-size: 1.08rem;
-        color: #302c28;
+        color: var(--muted);
       }
 
       .why {
-        margin-top: 22px;
+        margin-top: 0;
         color: var(--soft);
-        max-width: 760px;
-        margin-left: auto;
-        margin-right: auto;
+        max-width: 100%;
       }
 
       .why p + p {
-        margin-top: 18px;
+        margin-top: 12px;
       }
 
       footer {
-        margin-top: 104px;
+        margin-top: 72px;
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 10px;
-        color: #8a847c;
+        color: var(--soft);
         font-size: 0.9rem;
       }
 
@@ -138,7 +146,14 @@
         width: 18px;
         height: 18px;
         display: block;
-        opacity: 0.68;
+        opacity: 0.6;
+      }
+
+      @media (max-width: 860px) {
+        .demo-and-why {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
       }
     </style>
   </head>
@@ -148,46 +163,51 @@
         <img class="hero-logo" src="/public/primary-logo.png" alt="UnTangle logo" />
         <h1>Untangle what&rsquo;s actually going on inside</h1>
         <p class="hero-copy">
-          You&rsquo;re not just overwhelmed. You&rsquo;re holding multiple things at once &mdash; and they&rsquo;re getting mixed
-          together.
+          You&rsquo;re not just overwhelmed.<br />
+          You&rsquo;re holding multiple things at once &mdash; and they&rsquo;re getting mixed together.
         </p>
       </section>
 
-      <section>
+      <section class="content-section">
         <h2>What this is</h2>
         <p class="section-copy">
-          UnTangle helps you separate what you&rsquo;re feeling into what&rsquo;s actually there &mdash; so you can see it
-          clearly, instead of circling it.
+          UnTangle separates what you&rsquo;re feeling into what&rsquo;s actually there &mdash; so you can see it clearly,
+          instead of circling it.
         </p>
       </section>
 
-      <section>
+      <section class="content-section">
         <h2>See how it works</h2>
-        <div class="demo-wrap">
-          <video controls width="100%" style="border-radius: 16px">
-            <source src="/public/demo.mp4" type="video/mp4" />
-          </video>
+        <div class="demo-and-why">
+          <div>
+            <div class="demo-wrap">
+              <video controls width="100%" style="border-radius: 16px">
+                <source src="/public/demo.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <p class="section-copy">A real interaction flow &mdash; from overwhelm to clarity in minutes.</p>
+          </div>
+          <div>
+            <h2>Why this works</h2>
+            <div class="why">
+              <p>Most tools help you talk about how you feel.</p>
+              <p>UnTangle shows you what&rsquo;s underneath it.</p>
+              <p>Not everything you feel is the same thing &mdash; but it gets treated that way.</p>
+              <p>
+                When you separate it properly, clarity isn&rsquo;t something you force &mdash; it&rsquo;s something that shows up.
+              </p>
+            </div>
+          </div>
         </div>
-        <p class="section-copy">A real interaction flow &mdash; from overwhelm to clarity in minutes.</p>
       </section>
 
-      <section>
+      <section class="content-section">
         <h2>How it works</h2>
         <ol class="steps">
           <li>1. Put down what feels tangled</li>
           <li>2. See what&rsquo;s actually inside it</li>
           <li>3. Notice what&rsquo;s repeating and what matters</li>
         </ol>
-      </section>
-
-      <section>
-        <h2>Why this works</h2>
-        <div class="why">
-          <p>Most tools help you talk about how you feel.</p>
-          <p>UnTangle shows you what&rsquo;s underneath it.</p>
-          <p>Not everything you feel is the same thing &mdash; but it gets treated that way.</p>
-          <p>When you separate it properly, clarity isn&rsquo;t something you force &mdash; it&rsquo;s something that shows up.</p>
-        </div>
       </section>
 
       <footer>
