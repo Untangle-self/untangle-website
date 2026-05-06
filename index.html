@@ -737,8 +737,9 @@
 
           fetch('https://hooks.zapier.com/hooks/catch/10548864/4y3dpz9/', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: email })
+            body: new URLSearchParams({
+              email: email
+            })
           }).then(function (response) {
             if (!response.ok) throw new Error('Request failed');
             form.style.display = 'none';
