@@ -6,7 +6,7 @@
     <title>UnTangle</title>
     <style>
       :root {
-        --bg:    #ffffff;
+        --bg:    #f7f8fb;
         --text:  #0d1117;
         --muted: #5a6475;
         --soft:  #9aa3af;
@@ -17,7 +17,7 @@
  
       body {
         margin: 0;
-        background: var(--bg);
+        background: linear-gradient(180deg, #f7f8fb 0%, #eef1f6 100%);
         color: var(--text);
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
@@ -31,9 +31,9 @@
       /* ─── Layout ─────────────────────────────────────── */
  
       main {
-        max-width: 1020px;
+        max-width: 1200px;
         margin: 0 auto;
-        padding: 52px 32px 80px;
+        padding: 56px 40px 80px;
       }
  
       /* ─── Hero ───────────────────────────────────────── */
@@ -82,13 +82,23 @@
         max-width: 680px;
         margin: 0 0 52px;
       }
+
+      .problem-block {
+        max-width: 740px;
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.55;
+        margin: 0 0 48px;
+      }
+
+      .problem-block p + p { margin-top: 10px; }
  
       /* ─── Demo ───────────────────────────────────────── */
  
       .demo-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-        gap: 52px;
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+        gap: 48px;
         align-items: start;
       }
  
@@ -220,10 +230,23 @@
  
       <!-- Bridge — no label, just the statement -->
       <p class="bridge">
-        UnTangle separates what you&rsquo;re feeling into what&rsquo;s actually there &mdash;
-        so you can see it clearly, instead of circling it.
+        UnTangle doesn&rsquo;t help you express what you feel.<br /><br />
+        It helps you see what&rsquo;s actually happening inside it.<br /><br />
+        Because what feels like one thing<br />
+        is usually not one thing.<br /><br />
+        It&rsquo;s multiple signals &mdash;<br />
+        reactions, expectations, context &mdash;<br />
+        layered together.<br /><br />
+        Until you separate them,<br />
+        everything feels heavier than it is.
       </p>
  
+      <div class="problem-block">
+        <p>In moments like arguments or overthinking, your thoughts loop.</p>
+        <p>Emotions feel mixed or unclear. Nothing feels fully true or false.</p>
+        <p>So you keep going over it &mdash; not because you want to, but because you can&rsquo;t see what&rsquo;s actually going on.</p>
+      </div>
+
       <!-- Demo — the center of the page -->
       <div class="demo-grid">
  
@@ -238,12 +261,14 @@
  
         <div class="commentary">
           <p class="thesis">
-            Most tools help you talk about how you feel.<br />
-            UnTangle shows you what&rsquo;s underneath it.
+            Most tools keep you inside what you feel.<br />
+            UnTangle shows you what&rsquo;s actually happening.
           </p>
           <div class="support">
-            <p>Not everything you feel is the same thing &mdash; but it gets treated that way.</p>
-            <p>When you separate it properly, clarity isn&rsquo;t something you force &mdash; it&rsquo;s something that shows up.</p>
+            <p>Those aren&rsquo;t the same thing.</p>
+            <p>What feels like one thing is usually multiple things &mdash; layered together.</p>
+            <p>When you separate them properly, you stop reacting to everything at once.</p>
+            <p>And that&rsquo;s where clarity comes from.</p>
           </div>
         </div>
  
