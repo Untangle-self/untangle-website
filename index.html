@@ -168,12 +168,13 @@
         padding: 10px;
       }
  
-      .video-frame video {
+      .demo-video video {
         display: block;
         width: 100%;
         height: auto;
         aspect-ratio: 1 / 1;
-        object-fit: contain;
+        object-fit: cover;
+        object-position: 12px center;
         border-radius: 12px;
       }
  
@@ -184,19 +185,6 @@
         line-height: 1.5;
       }
 
-      .sound-toggle {
-        position: absolute;
-        right: 18px;
-        bottom: 18px;
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        background: rgba(20, 20, 20, 0.52);
-        color: #f4f2ed;
-        padding: 6px 10px;
-        border-radius: 999px;
-        font-size: 0.72rem;
-        line-height: 1;
-        cursor: pointer;
-      }
  
       .commentary {
         padding-top: 4px;
@@ -359,7 +347,7 @@
         align-items: center;
         gap: 16px;
         color: #5f574d;
-        font-size: 0.92rem;
+        font-size: 1rem;
         flex-wrap: wrap;
       }
  
@@ -377,8 +365,8 @@
       }
  
       .footer-icon {
-        width: 22px;
-        height: 22px;
+        width: 28px;
+        height: 28px;
         display: block;
         opacity: 1;
         filter: none;
@@ -599,11 +587,10 @@
       <div class="demo-grid">
  
         <div>
-          <div class="video-frame">
+          <div class="video-frame demo-video">
             <video autoplay loop muted playsinline width="100%" id="demo-video">
               <source src="/public/demo.mp4" type="video/mp4" />
             </video>
-            <button class="sound-toggle" type="button" id="sound-toggle">Tap for sound</button>
           </div>
           <p class="video-caption">From overwhelm to clarity &mdash; a real interaction.</p>
         </div>
@@ -618,6 +605,8 @@
             <p>What feels like one thing is usually multiple things &mdash; layered together.</p>
             <p>When you separate them properly, you stop reacting to everything at once.</p>
             <p>And that&rsquo;s where clarity comes from.</p>
+            <p>Once the pattern becomes visible, you stop reacting to everything at once.</p>
+            <p>That&rsquo;s usually where relief begins.</p>
           </div>
         </div>
  
@@ -753,15 +742,6 @@
           });
         });
 
-        var demoVideo = document.getElementById('demo-video');
-        var soundToggle = document.getElementById('sound-toggle');
-        if (demoVideo && soundToggle) {
-          soundToggle.addEventListener('click', function () {
-            demoVideo.muted = false;
-            demoVideo.play();
-            soundToggle.style.display = 'none';
-          });
-        }
       })();
     </script>
   </body>
