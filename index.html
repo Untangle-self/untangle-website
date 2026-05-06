@@ -57,8 +57,9 @@
       ──────────────────────────────────────────────── */
  
       .hero-wrap {
+        position: relative;
         background: var(--hero-bg);
-        padding: 64px 28px 88px;
+        padding: 52px 28px 88px;
       }
  
       .hero-inner {
@@ -70,8 +71,10 @@
       .hero-logo {
         width: min(66px, 13.5vw);
         height: auto;
-        display: block;
-        margin: 0 auto 30px;
+        position: absolute;
+        top: 24px;
+        left: 28px;
+        margin: 0;
       }
  
       .hero-title {
@@ -514,6 +517,10 @@
       @media (max-width: 780px) {
         .hero-wrap { padding: 52px 22px 72px; }
         main { padding: 56px 22px 64px; }
+        .hero-logo {
+          top: 20px;
+          left: 22px;
+        }
  
         .hero-moments {
           margin-top: 40px;
