@@ -6,231 +6,201 @@
     <title>UnTangle</title>
     <style>
       :root {
-        --bg: #e9edf2;
-        --text: #0b1220;
-        --muted: #64748b;
-        --soft: #94a3b8;
-        --accent: #2563eb;
-        --rule: #dbe3ea;
+        --bg:    #ffffff;
+        --text:  #0d1117;
+        --muted: #5a6475;
+        --soft:  #9aa3af;
+        --rule:  #e8eaed;
       }
  
-      * {
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; }
  
       body {
         margin: 0;
-        min-height: 100vh;
         background: var(--bg);
         color: var(--text);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        line-height: 1.5;
-        font-weight: 400;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
+        font-size: 16px;
+        line-height: 1.5;
       }
+ 
+      p { margin: 0; }
+ 
+      /* ─── Layout ─────────────────────────────────────── */
  
       main {
-        max-width: 1000px;
+        max-width: 1020px;
         margin: 0 auto;
-        padding: 56px 28px 64px;
-        text-align: center;
+        padding: 52px 32px 80px;
       }
  
-      section {
-        margin-top: 48px;
-      }
+      /* ─── Hero ───────────────────────────────────────── */
  
       .hero {
-        margin-top: 0;
-      }
- 
-      .content-section {
-        text-align: left;
-        padding-top: 48px;
-        border-top: 1px solid var(--rule);
-      }
- 
-      /* First content section sits closer to hero */
-      .content-section:first-of-type {
-        margin-top: 40px;
+        text-align: center;
+        padding-bottom: 80px;
       }
  
       .hero-logo {
-        width: min(120px, 28vw);
+        width: min(88px, 20vw);
         height: auto;
         display: block;
-        margin: 0 auto 20px;
-        opacity: 0.92;
+        margin: 0 auto 32px;
+        opacity: 0.85;
       }
  
-      h1 {
+      .hero-title {
         margin: 0;
-        font-size: clamp(1.85rem, 3.8vw, 2.9rem);
-        line-height: 1.12;
-        letter-spacing: -0.035em;
-        font-weight: 650;
+        font-size: clamp(2.4rem, 5.2vw, 3.8rem);
+        line-height: 1.06;
+        letter-spacing: -0.045em;
+        font-weight: 700;
         color: var(--text);
       }
  
-      h2 {
-        margin: 0 0 2px;
-        font-size: clamp(1.1rem, 2vw, 1.35rem);
-        line-height: 1.2;
-        letter-spacing: -0.02em;
-        font-weight: 600;
-        color: var(--text);
-        text-transform: uppercase;
-        font-size: 0.72rem;
-        letter-spacing: 0.1em;
-        color: var(--soft);
-      }
- 
-      p {
-        margin: 0;
-      }
- 
-      .hero-copy {
-        max-width: 620px;
-        margin: 16px auto 0;
-        font-size: clamp(1rem, 1.7vw, 1.12rem);
-        color: var(--muted);
-        line-height: 1.6;
-      }
- 
-      .section-label {
-        font-size: 0.7rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--soft);
-        font-weight: 500;
-        margin-bottom: 10px;
-      }
- 
-      .section-heading {
-        font-size: clamp(1.25rem, 2.4vw, 1.75rem);
-        line-height: 1.2;
-        letter-spacing: -0.025em;
-        font-weight: 600;
-        color: var(--text);
-        margin: 0 0 10px;
-      }
- 
-      .section-copy {
-        max-width: 640px;
-        margin: 0;
-        font-size: 1.02rem;
+      .hero-sub {
+        margin: 20px auto 0;
+        max-width: 520px;
+        font-size: clamp(1rem, 1.8vw, 1.13rem);
         color: var(--muted);
         line-height: 1.65;
+        font-weight: 400;
       }
  
-      /* Demo as centerpiece */
-      .demo-and-why {
-        margin-top: 20px;
+      /* ─── Bridge ─────────────────────────────────────── */
+      /* Not a section — a statement. Left-aligned shift    */
+      /* signals "you've entered the product."              */
+ 
+      .bridge {
+        font-size: clamp(1.15rem, 2.2vw, 1.42rem);
+        line-height: 1.45;
+        letter-spacing: -0.02em;
+        font-weight: 450;
+        color: var(--text);
+        max-width: 680px;
+        margin: 0 0 52px;
+      }
+ 
+      /* ─── Demo ───────────────────────────────────────── */
+ 
+      .demo-grid {
         display: grid;
-        grid-template-columns: minmax(0, 540px) minmax(0, 1fr);
-        gap: 40px;
+        grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+        gap: 52px;
         align-items: start;
       }
  
-      .demo-wrap {
-        padding: 14px;
-        border-radius: 16px;
-        background: #f8fafc;
+      .video-frame {
+        border-radius: 14px;
         border: 1px solid var(--rule);
+        background: #f5f7f9;
+        padding: 8px;
       }
  
-      .demo-caption {
+      .video-frame video {
+        display: block;
+        width: 100%;
+        border-radius: 8px;
+      }
+ 
+      .video-caption {
         margin-top: 10px;
-        font-size: 0.88rem;
+        font-size: 0.84rem;
         color: var(--soft);
         line-height: 1.5;
       }
  
-      video {
-        display: block;
-        width: 100%;
-        border-radius: 10px;
+      /* Right column: thesis first, support after */
+ 
+      .commentary {
+        padding-top: 6px;
       }
  
-      /* Why this works — dense, weighted */
-      .why-block {
-        margin-top: 4px;
-        max-width: 420px;
-      }
- 
-      .why-block p {
-        font-size: 1.05rem;
-        line-height: 1.6;
-        color: var(--muted);
-      }
- 
-      .why-block p + p {
-        margin-top: 8px;
-      }
- 
-      .why-block .why-anchor {
-        font-size: 1.08rem;
-        font-weight: 550;
+      .thesis {
+        font-size: clamp(1.12rem, 2vw, 1.32rem);
+        line-height: 1.35;
+        letter-spacing: -0.022em;
+        font-weight: 600;
         color: var(--text);
-        line-height: 1.5;
-        margin-bottom: 12px;
-        display: block;
+        margin: 0 0 22px;
       }
  
-      /* Steps */
-      .steps {
-        max-width: 580px;
-        margin: 14px 0 0;
-        padding: 0;
-        list-style: none;
-        display: grid;
-        gap: 10px;
-      }
- 
-      .steps li {
+      .support {
         font-size: 1.02rem;
+        line-height: 1.68;
         color: var(--muted);
-        line-height: 1.55;
+      }
+ 
+      .support p + p { margin-top: 10px; }
+ 
+      /* ─── Steps ──────────────────────────────────────── */
+      /* Horizontal — three equal columns, no heading       */
+ 
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 68px;
+        padding-top: 36px;
+        border-top: 1px solid var(--rule);
+      }
+ 
+      .step {
         display: flex;
-        gap: 10px;
-        align-items: baseline;
+        flex-direction: column;
+        gap: 7px;
       }
  
       .step-num {
-        font-size: 0.72rem;
+        font-size: 0.67rem;
         font-weight: 600;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.1em;
         color: var(--soft);
-        flex-shrink: 0;
-        margin-top: 2px;
+        line-height: 1;
       }
  
+      .step-text {
+        font-size: 0.98rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+ 
+      /* ─── Footer ─────────────────────────────────────── */
+ 
       footer {
-        margin-top: 56px;
+        margin-top: 64px;
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 8px;
         color: var(--soft);
-        font-size: 0.85rem;
-        border-top: 1px solid var(--rule);
-        padding-top: 28px;
+        font-size: 0.82rem;
       }
  
       .footer-icon {
-        width: 22px;
-        height: 22px;
+        width: 15px;
+        height: 15px;
         display: block;
+        opacity: 0.45;
       }
  
-      @media (max-width: 860px) {
-        .demo-and-why {
+      /* ─── Responsive ─────────────────────────────────── */
+ 
+      @media (max-width: 780px) {
+        .hero { padding-bottom: 52px; }
+        .bridge { margin-bottom: 36px; }
+ 
+        .demo-grid {
           grid-template-columns: 1fr;
-          gap: 20px;
+          gap: 28px;
         }
  
-        .content-section {
-          padding-top: 36px;
+        .steps {
+          grid-template-columns: 1fr;
+          gap: 14px;
+          margin-top: 48px;
         }
       }
     </style>
@@ -238,82 +208,62 @@
   <body>
     <main>
  
-      <!-- Hero -->
+      <!-- Hero — centered, singular -->
       <section class="hero">
-        <img class="hero-logo" src="/public/primary-logo.png" alt="UnTangle logo" />
-        <h1>Untangle what&rsquo;s actually going on inside</h1>
-        <p class="hero-copy">
-          You&rsquo;re not overwhelmed.<br /><br />
+        <img class="hero-logo" src="/public/primary-logo.png" alt="UnTangle" />
+        <h1 class="hero-title">Untangle what&rsquo;s actually going on inside</h1>
+        <p class="hero-sub">
+          You&rsquo;re not just overwhelmed.<br />
           You&rsquo;re holding multiple things at once &mdash; and they&rsquo;re getting mixed together.
         </p>
       </section>
  
-      <!-- What this is -->
-      <section class="content-section">
-        <p class="section-label">What this is</p>
-        <h2 class="section-heading">Separation creates clarity.</h2>
-        <p class="section-copy">
-          UnTangle helps you separate what you&rsquo;re feeling into what&rsquo;s actually there &mdash;<br />
-          so you can see it clearly, instead of circling it.<br /><br />
-          Because what feels like one thing is usually not one thing.<br /><br />
-          It&rsquo;s multiple signals layered together &mdash;<br />
-          reactions, expectations, context, and meaning.<br /><br />
-          Until you separate them,<br />
-          everything feels heavier than it actually is.
-        </p>
-      </section>
+      <!-- Bridge — no label, just the statement -->
+      <p class="bridge">
+        UnTangle separates what you&rsquo;re feeling into what&rsquo;s actually there &mdash;
+        so you can see it clearly, instead of circling it.
+      </p>
  
-      <!-- The problem -->
-      <section class="content-section">
-        <p class="section-label">THE PROBLEM</p>
-        <p class="section-copy">
-          In moments like arguments or overthinking:<br /><br />
-          - your thoughts loop<br />
-          - emotions feel mixed or unclear<br />
-          - nothing feels fully true or fully false<br /><br />
-          So you keep going over it.<br /><br />
-          Not because you want to &mdash;<br />
-          but because you can&rsquo;t see what&rsquo;s actually going on.
-        </p>
-      </section>
-
-      <!-- Demo + Why -->
-      <section class="content-section">
-        <p class="section-label">See how it works</p>
-        <div class="demo-and-why">
-          <div>
-            <div class="demo-wrap">
-              <video controls width="100%">
-                <source src="/public/demo.mp4" type="video/mp4" />
-              </video>
-            </div>
-            <p class="demo-caption">A real interaction &mdash; from overwhelm to clarity in minutes.</p>
+      <!-- Demo — the center of the page -->
+      <div class="demo-grid">
+ 
+        <div>
+          <div class="video-frame">
+            <video controls width="100%">
+              <source src="/public/demo.mp4" type="video/mp4" />
+            </video>
           </div>
-          <div>
-            <p class="section-label">Why this works</p>
-            <div class="why-block">
-              <span class="why-anchor">Most tools keep you inside what you feel.<br /><br />UnTangle shows you what&rsquo;s actually happening.</span>
-              <p>Those aren&rsquo;t the same thing.</p>
-              <p>What feels like one thing<br />is usually multiple things &mdash; layered together.</p>
-              <p>
-                When you separate them properly,<br />
-                you stop reacting to everything at once.
-              </p>
-              <p>And that&rsquo;s where clarity comes from.</p>
-            </div>
+          <p class="video-caption">From overwhelm to clarity &mdash; a real interaction.</p>
+        </div>
+ 
+        <div class="commentary">
+          <p class="thesis">
+            Most tools help you talk about how you feel.<br />
+            UnTangle shows you what&rsquo;s underneath it.
+          </p>
+          <div class="support">
+            <p>Not everything you feel is the same thing &mdash; but it gets treated that way.</p>
+            <p>When you separate it properly, clarity isn&rsquo;t something you force &mdash; it&rsquo;s something that shows up.</p>
           </div>
         </div>
-      </section>
  
-      <!-- How it works -->
-      <section class="content-section">
-        <p class="section-label">How it works</p>
-        <ol class="steps">
-          <li><span class="step-num">01</span><span>Put down what feels tangled</span></li>
-          <li><span class="step-num">02</span><span>See what&rsquo;s actually inside it</span></li>
-          <li><span class="step-num">03</span><span>Notice what&rsquo;s repeating and what matters</span></li>
-        </ol>
-      </section>
+      </div>
+ 
+      <!-- Steps — horizontal, no heading -->
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">01</span>
+          <span class="step-text">Put down what feels tangled</span>
+        </div>
+        <div class="step">
+          <span class="step-num">02</span>
+          <span class="step-text">See what&rsquo;s actually inside it</span>
+        </div>
+        <div class="step">
+          <span class="step-num">03</span>
+          <span class="step-text">Notice what&rsquo;s repeating and what matters</span>
+        </div>
+      </div>
  
       <footer>
         <img class="footer-icon" src="/public/logo-icon-dark.png" alt="" aria-hidden="true" />
