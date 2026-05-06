@@ -58,7 +58,7 @@
  
       .hero-wrap {
         background: var(--hero-bg);
-        padding: 64px 32px 88px;
+        padding: 64px 28px 88px;
       }
  
       .hero-inner {
@@ -122,7 +122,7 @@
       main {
         max-width: 1020px;
         margin: 0 auto;
-        padding: 76px 32px 84px;
+        padding: 76px 28px 84px;
       }
  
       /* ── Bridge ───────────────────────────────────────
@@ -161,6 +161,7 @@
       }
  
       .video-frame {
+        position: relative;
         border-radius: 18px;
         border: 1px solid var(--rule);
         background: #EBE6DE;
@@ -181,6 +182,20 @@
         font-size: 0.82rem;
         color: var(--soft);
         line-height: 1.5;
+      }
+
+      .sound-toggle {
+        position: absolute;
+        right: 18px;
+        bottom: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(20, 20, 20, 0.52);
+        color: #f4f2ed;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        line-height: 1;
+        cursor: pointer;
       }
  
       .commentary {
@@ -343,8 +358,8 @@
         justify-content: space-between;
         align-items: center;
         gap: 16px;
-        color: var(--muted);
-        font-size: 0.88rem;
+        color: #5f574d;
+        font-size: 0.92rem;
         flex-wrap: wrap;
       }
  
@@ -362,8 +377,8 @@
       }
  
       .footer-icon {
-        width: 20px;
-        height: 20px;
+        width: 22px;
+        height: 22px;
         display: block;
         opacity: 1;
         filter: none;
@@ -481,8 +496,8 @@
       /* ── Responsive ───────────────────────────────────── */
  
       @media (max-width: 780px) {
-        .hero-wrap { padding: 52px 24px 72px; }
-        main { padding: 56px 24px 64px; }
+        .hero-wrap { padding: 52px 22px 72px; }
+        main { padding: 56px 22px 64px; }
  
         .hero-moments {
           margin-top: 40px;
@@ -585,9 +600,10 @@
  
         <div>
           <div class="video-frame">
-            <video controls width="100%">
+            <video autoplay loop muted playsinline width="100%" id="demo-video">
               <source src="/public/demo.mp4" type="video/mp4" />
             </video>
+            <button class="sound-toggle" type="button" id="sound-toggle">Tap for sound</button>
           </div>
           <p class="video-caption">From overwhelm to clarity &mdash; a real interaction.</p>
         </div>
@@ -602,9 +618,6 @@
             <p>What feels like one thing is usually multiple things &mdash; layered together.</p>
             <p>When you separate them properly, you stop reacting to everything at once.</p>
             <p>And that&rsquo;s where clarity comes from.</p>
-            <p>You can pause without losing the thread.</p>
-            <p>You can respond from understanding, not urgency.</p>
-            <p>That shift is small, but it changes everything that follows.</p>
           </div>
         </div>
  
@@ -676,7 +689,7 @@
           UnTangle is in active development. Join the list &mdash;<br />
           we&rsquo;ll reach out when it&rsquo;s ready.
         </p>
-        <form action="https://tally.so/r/LZ5L1v" method="POST" class="waitlist-form" id="waitlist-form">
+        <form action="https://hooks.zapier.com/hooks/catch/10548864/4y3dpz9/" method="POST" class="waitlist-form" id="waitlist-form">
           <input
             class="waitlist-input"
             type="email"
@@ -719,8 +732,35 @@
             return;
           }
 
-          window.location.href = 'https://tally.so/r/LZ5L1v?email=' + encodeURIComponent(email);
+          var submitButton = form.querySelector('.waitlist-btn');
+          if (submitButton) submitButton.disabled = true;
+
+          fetch('PASTE_WEBHOOK_URL_HERE', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+          }).then(function (response) {
+            if (!response.ok) throw new Error('Request failed');
+            form.style.display = 'none';
+            var confirmEl = document.getElementById('wl-confirm');
+            if (confirmEl) {
+              confirmEl.innerHTML = 'You&rsquo;re on the list ✨<br />We&rsquo;ll reach out when it&rsquo;s ready.';
+              confirmEl.style.display = 'block';
+            }
+          }).catch(function () {
+            if (submitButton) submitButton.disabled = false;
+          });
         });
+
+        var demoVideo = document.getElementById('demo-video');
+        var soundToggle = document.getElementById('sound-toggle');
+        if (demoVideo && soundToggle) {
+          soundToggle.addEventListener('click', function () {
+            demoVideo.muted = false;
+            demoVideo.play();
+            soundToggle.style.display = 'none';
+          });
+        }
       })();
     </script>
   </body>
