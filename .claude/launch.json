@@ -2,11 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "Untangle Dev Server",
+      "name": "Untangle Website",
       "runtimeExecutable": "/bin/bash",
-      "runtimeArgs": ["/Users/barathiss/untangle/.claude/run-dev.sh"],
-      "port": 5173,
-      "autoPort": true
+      "runtimeArgs": ["-c", "cd /Users/barathiss/untangle-website && npm run dev -- --port 5176"],
+      "port": 5176
     }
   ]
 }

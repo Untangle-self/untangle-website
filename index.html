@@ -22,7 +22,7 @@
       :root {
         --hero-bg:    #131A16;   /* deep forest sage — references app's #7C8175 secondary */
         --hero-text:  #EDE8E2;
-        --hero-muted: #7A8A80;   /* lifted to be readable on sage-dark */
+        --hero-muted: #7A8A80;   /* lifted to be readable on sage-dark bg */
         --hero-line:  #1E2C22;
  
         --bg:     #F5F1EB;
@@ -140,15 +140,15 @@
         letter-spacing: -0.02em;
         font-weight: 500;
         color: var(--text);
-        margin: 0 0 14px;
+        margin: 0 0 20px;
       }
  
       .bridge-sub {
-        max-width: 540px;
+        max-width: 600px;
         font-size: 1.02rem;
         color: var(--muted);
-        line-height: 1.7;
-        margin: 0 0 72px;
+        line-height: 1.75;
+        margin: 0 0 88px;
       }
  
       /* ── Demo ─────────────────────────────────────────
@@ -158,9 +158,9 @@
  
       .demo-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1.32fr) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: 52px;
-        align-items: start;
+        align-items: center;
       }
  
       .video-frame {
@@ -191,6 +191,10 @@
  
       .commentary {
         padding-top: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 100%;
       }
  
       /* The core thesis — heaviest non-H1 text on the page */
@@ -218,7 +222,8 @@
       ──────────────────────────────────────────────── */
  
       .quote-block {
-        margin-top: 84px;
+        margin-top: 88px;
+        margin-bottom: 88px;
         background: var(--hero-bg);
         border-radius: 22px;
         padding: 56px 64px;
@@ -255,51 +260,61 @@
         color: #607068;
       }
  
-      /* ── Steps ────────────────────────────────────────
-         Horizontal. Quiet. A confirmation, not a label.
+      /* ── Insights ─────────────────────────────────────
+         Stacked observations about how clarity works.
+         Creates curiosity — not a process explanation.
       ──────────────────────────────────────────────── */
- 
-      .steps {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
-        margin-top: 76px;
+
+      .insights {
+        margin-top: 56px;
         padding-top: 32px;
         border-top: 1px solid var(--rule);
+        max-width: 680px;
       }
- 
-      .step {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
+
+      .insight {
+        padding: 32px 0;
+        border-bottom: 1px solid var(--rule);
       }
- 
-      .step-num {
-        font-size: 0.65rem;
+
+      .insight-claim {
+        font-size: clamp(1.02rem, 1.8vw, 1.18rem);
         font-weight: 600;
-        letter-spacing: 0.13em;
-        color: var(--soft);
-        line-height: 1;
-      }
- 
-      .step-title {
-        font-size: 0.96rem;
-        font-weight: 500;
+        letter-spacing: -0.02em;
         color: var(--text);
-        line-height: 1.42;
+        line-height: 1.38;
+        margin: 0 0 10px;
       }
- 
-      .step-desc {
-        font-size: 0.87rem;
-        color: var(--soft);
-        line-height: 1.62;
-        margin-top: 2px;
+
+      .insight-body {
+        font-size: 0.96rem;
+        color: var(--muted);
+        line-height: 1.72;
+        margin: 0;
+      }
+
+      .insights-close {
+        margin-top: 28px;
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: clamp(1.1rem, 2vw, 1.3rem);
+        color: var(--accent);
+        letter-spacing: -0.01em;
+      }
+
+      /* ── Experience section header ───────────────────── */
+      .section-intro {
+        font-size: clamp(1.1rem, 2vw, 1.3rem);
+        font-weight: 600;
+        color: var(--text);
+        margin: 0 0 32px;
+        line-height: 1.3;
       }
  
       /* ── Founder ──────────────────────────────────────── */
  
       .founder {
-        margin-top: 72px;
+        margin-top: 56px;
         padding-top: 40px;
         border-top: 1px solid var(--rule);
         display: grid;
@@ -548,10 +563,9 @@
           border-radius: 16px;
         }
  
-        .steps {
-          grid-template-columns: 1fr;
-          gap: 16px;
+        .insights {
           margin-top: 56px;
+          max-width: 100%;
         }
  
         .founder {
@@ -585,7 +599,7 @@
       <div class="hero-inner">
         <img class="hero-logo" src="/public/primary-logo-v3.png" alt="UnTangle" />
         <h1 class="hero-title">
-          Untangle what&rsquo;s actually<br />going on inside
+          UnTangle what&rsquo;s actually<br />going on inside
         </h1>
         <p class="hero-sub">
           When something doesn&rsquo;t sit right, you keep going over it.<br />
@@ -607,15 +621,12 @@
     -->
     <main>
  
-      <!-- Bridge — no label, just the statement -->
+      <!-- Bridge — introduce Ira -->
       <p class="bridge">
-        UnTangle doesn&rsquo;t help you express what you feel.<br />
-        It helps you see what&rsquo;s underneath it.
+        Meet Ira.
       </p>
       <p class="bridge-sub">
-        Most of what feels overwhelming isn&rsquo;t one thing. It&rsquo;s multiple signals &mdash;
-        reactions, expectations, context &mdash; layered together.
-        Until you separate them, everything feels heavier than it is.
+        She's a thoughtful presence built to understand what's actually tangling you up. Not to calm you down or give you answers — but to help you see what's underneath the confusion clearly enough that you can finally stop circling it.
       </p>
  
       <!-- Demo — the center of the page -->
@@ -627,22 +638,16 @@
               <source src="/public/demo-v4.mp4" type="video/mp4" />
             </video>
           </div>
-          <p class="video-caption">From overwhelm to clarity &mdash; a real interaction.</p>
+          <p class="video-caption">From overwhelm to clarity &mdash; a real conversation with Ira.</p>
         </div>
  
         <div class="commentary">
           <p class="thesis">
-            Most tools keep you inside what you feel.<br />
-            UnTangle shows you what&rsquo;s actually happening.
+            Ira doesn&rsquo;t help you express yourself.<br />
+            She helps you see what&rsquo;s underneath.
           </p>
           <div class="support">
-            <p>Those aren&rsquo;t the same thing.</p>
-            <p>What feels like one thing is usually multiple things &mdash; layered together.</p>
-            <p>When you separate them properly, you stop reacting to everything at once.</p>
-            <p>And that&rsquo;s where clarity comes from.</p>
-            <p>In emotionally overwhelming moments, people don&rsquo;t want to do more work &mdash; they want clarity.</p>
-            <p>The goal is clarity, not explanation.</p>
-            <p>That&rsquo;s usually where relief begins.</p>
+            <p>What feels like one tangled thing is usually several things stacked together. When you separate them, the weight lifts.</p>
           </div>
         </div>
  
@@ -657,23 +662,34 @@
         <p class="quote-attr">What clarity feels like</p>
       </div>
  
-      <!-- Steps — horizontal, three moments in the journey -->
-      <div class="steps">
-        <div class="step">
-          <span class="step-num">01</span>
-          <span class="step-title">Share what&rsquo;s happening</span>
-          <span class="step-desc">In your own words, however it comes out. No structure, no prompts &mdash; the system meets you where you are.</span>
+      <!-- How Ira works — conversational, warm, her presence -->
+      <div style="margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--rule);">
+        <p style="font-size: 1.02rem; color: var(--muted); line-height: 1.75; margin: 0 0 28px; max-width: 680px;">
+          What happens when you talk to Ira isn&rsquo;t complicated. You share what&rsquo;s happening &mdash; however it comes out. She listens. Then, slowly, she helps you see what was tangled underneath what you already said.
+        </p>
+        <p style="font-size: 1.02rem; color: var(--muted); line-height: 1.75; margin: 0 0 28px; max-width: 680px;">
+          Not by analyzing you. By understanding the shape of what you&rsquo;re feeling and reflecting it back so clearly you can finally see it too.
+        </p>
+        <p style="font-size: 1.02rem; color: var(--muted); line-height: 1.75; margin: 0; max-width: 680px;">
+          And then comes the moment. When you see it. When suddenly the thing that was making everything spin becomes obvious. When you can finally breathe.
+        </p>
+      </div>
+
+      <!-- Why clarity matters -->
+      <div class="insights" style="margin-top: 76px;">
+        <div class="insight">
+          <p class="insight-claim">Advice doesn&rsquo;t land before understanding arrives.</p>
+          <p class="insight-body">You can give someone the perfect words and they still won&rsquo;t stick if they don&rsquo;t see what&rsquo;s happening. Clarity has to come first.</p>
         </div>
-        <div class="step">
-          <span class="step-num">02</span>
-          <span class="step-title">Go underneath it, layer by layer</span>
-          <span class="step-desc">The system reflects what you said, then guides you deeper &mdash; surfacing what&rsquo;s actually driving it, not just what&rsquo;s on top.</span>
+        <div class="insight">
+          <p class="insight-claim">What&rsquo;s bothering you usually isn&rsquo;t what&rsquo;s bothering you.</p>
+          <p class="insight-body">There&rsquo;s the situation on the surface. And there&rsquo;s what it touches underneath. Most of the weight comes from the part you can&rsquo;t quite see.</p>
         </div>
-        <div class="step">
-          <span class="step-num">03</span>
-          <span class="step-title" style="font-family: var(--serif); font-style: italic; font-size: 1.05rem;">&ldquo;Oh&hellip; that&rsquo;s it.&rdquo;</span>
-          <span class="step-desc">One clear insight &mdash; earned, not forced. Then you choose: stay with it, go further, or leave it here for now.</span>
+        <div class="insight">
+          <p class="insight-claim">Seeing changes everything.</p>
+          <p class="insight-body">Not because you suddenly have all the answers. But because the spinning stops. You can finally breathe and think clearly about what&rsquo;s actually there.</p>
         </div>
+        <p class="insights-close">That&rsquo;s what Ira does.</p>
       </div>
  
       <!-- Founder — who built this and why it exists -->
