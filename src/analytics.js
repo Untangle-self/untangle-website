@@ -10,9 +10,9 @@ export function init() {
 
     // Disable invasive capture — no autocapture, no session replay, no heatmaps.
     // Standard traffic metadata (referrer, UTM, $current_url) is included
-    // automatically on every posthog.capture() call.
+    // automatically on every event.
     autocapture: false,
-    capture_pageview: false,
+    capture_pageview: true,
     capture_pageleave: false,
     disable_session_recording: true,
     enable_heatmaps: false,
@@ -28,10 +28,6 @@ function capture(event) {
 
 // ── Tracked events ───────────────────────────────────────────────────────────
 // All posthog.capture() calls go through this file. No scattered raw calls.
-
-export function trackLandingPageViewed() {
-  capture('landing_page_viewed')
-}
 
 export function trackJoinWaitlistClicked() {
   capture('join_waitlist_clicked')

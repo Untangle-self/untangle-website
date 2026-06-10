@@ -1,12 +1,10 @@
 import {
   init,
-  trackLandingPageViewed,
   trackJoinWaitlistClicked,
   trackWaitlistSignupCompleted,
 } from './analytics.js'
 
 init()
-trackLandingPageViewed()
 
 const form = document.getElementById('waitlist-form')
 const emailInput = document.getElementById('waitlist-email')
