@@ -513,6 +513,11 @@
  
       .waitlist-btn:hover { background: #9E845F; }
       .waitlist-btn:active { transform: scale(0.98); }
+      .waitlist-btn:disabled {
+        opacity: 0.48;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
  
       .waitlist-note {
         margin-top: 12px;
@@ -739,7 +744,7 @@
             placeholder="your@email.com"
             required
           />
-          <button class="waitlist-btn" type="submit">
+          <button class="waitlist-btn" type="submit" disabled>
             Join waitlist
           </button>
         </form>
@@ -752,7 +757,7 @@
           <img class="footer-icon" src="/public/logo-icon-dark.png" alt="" aria-hidden="true" />
           <p>Built for clarity</p>
         </div>
-        <a href="mailto:barathisubbaraman@gmail.com">barathisubbaraman@gmail.com</a>
+        <a href="mailto:barathisubbaraman@untangleself.com">barathisubbaraman@untangleself.com</a>
       </footer>
  
     </main>
@@ -762,18 +767,27 @@
         var form = document.getElementById('waitlist-form');
         var emailInput = document.getElementById('waitlist-email');
         if (!form || !emailInput) return;
+        var submitButton = form.querySelector('.waitlist-btn');
+
+        function updateSubmitState() {
+          if (submitButton) submitButton.disabled = !emailInput.checkValidity();
+        }
+
+        emailInput.addEventListener('input', updateSubmitState);
+        emailInput.addEventListener('change', updateSubmitState);
+        updateSubmitState();
 
         form.addEventListener('submit', function (event) {
           event.preventDefault();
           var email = emailInput.value.trim();
-          var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-          if (!emailPattern.test(email)) {
+          if (!emailInput.checkValidity()) {
+            emailInput.reportValidity();
             emailInput.focus();
+            updateSubmitState();
             return;
           }
 
-          var submitButton = form.querySelector('.waitlist-btn');
           if (submitButton) submitButton.disabled = true;
 
           fetch('https://hooks.zapier.com/hooks/catch/10548864/4y3dpz9/', {
