@@ -794,45 +794,6 @@
  
     </main>
  
-    <script>
-      (function () {
-        var form = document.getElementById('waitlist-form');
-        var emailInput = document.getElementById('waitlist-email');
-        if (!form || !emailInput) return;
-
-        form.addEventListener('submit', function (event) {
-          event.preventDefault();
-          var email = emailInput.value.trim();
-          var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-          if (!emailPattern.test(email)) {
-            emailInput.focus();
-            return;
-          }
-
-          var submitButton = form.querySelector('.waitlist-btn');
-          if (submitButton) submitButton.disabled = true;
-
-          fetch('https://hooks.zapier.com/hooks/catch/10548864/4y3dpz9/', {
-            method: 'POST',
-            body: new URLSearchParams({
-              email: email
-            })
-          }).then(function (response) {
-            if (!response.ok) throw new Error('Request failed');
-            form.style.display = 'none';
-            var confirmEl = document.getElementById('wl-confirm');
-            if (confirmEl) {
-              confirmEl.innerHTML = 'You&rsquo;re on the list ✨<br />We&rsquo;ll reach out when it&rsquo;s ready.';
-              confirmEl.style.display = 'block';
-            }
-          }).catch(function () {
-            if (submitButton) submitButton.disabled = false;
-          });
-        });
-
-      })();
-
-    </script>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
