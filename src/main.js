@@ -7,7 +7,12 @@ import {
 init()
 
 const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY
-const WAITLIST_API_URL = import.meta.env.VITE_WAITLIST_API_URL
+const WAITLIST_API_URL = (() => {
+  const url = import.meta.env.VITE_WAITLIST_API_URL?.trim()
+  if (!url) return ''
+  const base = url.replace(/\/+$/, '')
+  return base.endsWith('/api/waitlist') ? base : `${base}/api/waitlist`
+})()
 
 const form = document.getElementById('waitlist-form')
 const emailInput = document.getElementById('waitlist-email')
