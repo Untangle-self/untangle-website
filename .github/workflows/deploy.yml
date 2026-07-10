@@ -31,6 +31,8 @@ jobs:
         run: npm run build
         env:
           VITE_POSTHOG_KEY: ${{ secrets.VITE_POSTHOG_KEY }}
+          TURNSTILE_SITE_KEY: ${{ secrets.TURNSTILE_SITE_KEY }}
+          VITE_WAITLIST_API_URL: ${{ secrets.VITE_WAITLIST_API_URL }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

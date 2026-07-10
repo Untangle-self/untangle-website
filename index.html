@@ -495,9 +495,16 @@
  
       .waitlist-form {
         display: flex;
-        gap: 10px;
+        flex-direction: column;
+        gap: 12px;
         max-width: 400px;
         margin: 0 auto;
+      }
+
+      .waitlist-form-row {
+        display: flex;
+        gap: 10px;
+        width: 100%;
       }
  
       .waitlist-input {
@@ -534,6 +541,24 @@
  
       .waitlist-btn:hover { background: #9E845F; }
       .waitlist-btn:active { transform: scale(0.98); }
+      .waitlist-btn:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .waitlist-turnstile {
+        display: flex;
+        justify-content: center;
+      }
+
+      .waitlist-error {
+        display: none;
+        margin: 0;
+        font-size: 0.75rem;
+        color: #8a5a4a;
+        line-height: 1.5;
+      }
  
       .waitlist-note {
         margin-top: 12px;
@@ -601,7 +626,7 @@
           border-radius: 16px;
         }
  
-        .waitlist-form {
+        .waitlist-form-row {
           flex-direction: column;
         }
  
@@ -766,18 +791,22 @@
           UnTangle is in active development. Join the list &mdash;<br />
           we&rsquo;ll reach out when it&rsquo;s ready.
         </p>
-        <form action="https://hooks.zapier.com/hooks/catch/10548864/4y3dpz9/" method="POST" class="waitlist-form" id="waitlist-form">
-          <input
-            class="waitlist-input"
-            type="email"
-            name="email"
-            id="waitlist-email"
-            placeholder="your@email.com"
-            required
-          />
-          <button class="waitlist-btn" type="submit">
-            Join waitlist
-          </button>
+        <form class="waitlist-form" id="waitlist-form">
+          <div class="waitlist-form-row">
+            <input
+              class="waitlist-input"
+              type="email"
+              name="email"
+              id="waitlist-email"
+              placeholder="your@email.com"
+              required
+            />
+            <button class="waitlist-btn" type="submit">
+              Join waitlist
+            </button>
+          </div>
+          <div class="waitlist-turnstile" id="turnstile-widget"></div>
+          <p class="waitlist-error" id="wl-error" role="alert"></p>
         </form>
         <p class="waitlist-confirm" id="wl-confirm">You&rsquo;re on the list. We&rsquo;ll be in touch.</p>
         <p class="waitlist-note">No spam. Just one message when it&rsquo;s ready.</p>

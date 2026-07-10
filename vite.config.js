@@ -65,6 +65,7 @@ function marketingStaticAssets() {
 
 export default defineConfig({
   publicDir: false,
+  envPrefix: ['VITE_', 'TURNSTILE_'],
   plugins: [marketingStaticAssets()],
   server: {
     host: true,
