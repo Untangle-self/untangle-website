@@ -16,6 +16,7 @@ const WAITLIST_API_URL = (() => {
 
 const form = document.getElementById('waitlist-form')
 const emailInput = document.getElementById('waitlist-email')
+const companyInput = document.getElementById('waitlist-company')
 const errorEl = document.getElementById('wl-error')
 const turnstileContainer = document.getElementById('turnstile-widget')
 
@@ -112,7 +113,11 @@ if (form && emailInput) {
       const response = await fetch(WAITLIST_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, turnstileToken }),
+        body: JSON.stringify({
+          email,
+          turnstileToken,
+          company: companyInput?.value ?? '',
+        }),
       })
 
       let payload = {}
@@ -133,12 +138,20 @@ if (form && emailInput) {
         return
       }
 
-      trackWaitlistSignupCompleted()
+      const isNewSignup = typeof payload.message !== 'string'
+      if (isNewSignup) {
+        trackWaitlistSignupCompleted()
+      }
+
       form.style.display = 'none'
       const confirmEl = document.getElementById('wl-confirm')
       if (confirmEl) {
-        confirmEl.innerHTML =
-          'You’re on the list ✨<br />We’ll reach out when it’s ready.'
+        if (typeof payload.message === 'string') {
+          confirmEl.textContent = payload.message
+        } else {
+          confirmEl.innerHTML =
+            'You’re on the list ✨<br />We’ll reach out when it’s ready.'
+        }
         confirmEl.style.display = 'block'
       }
     } catch {

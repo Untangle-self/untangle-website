@@ -552,6 +552,14 @@
         justify-content: center;
       }
 
+      .waitlist-honeypot {
+        position: absolute;
+        left: -10000px;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+
       .waitlist-error {
         display: none;
         margin: 0;
@@ -792,6 +800,15 @@
           we&rsquo;ll reach out when it&rsquo;s ready.
         </p>
         <form class="waitlist-form" id="waitlist-form">
+          <input
+            type="text"
+            name="company"
+            id="waitlist-company"
+            class="waitlist-honeypot"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+          />
           <div class="waitlist-form-row">
             <input
               class="waitlist-input"
