@@ -78,11 +78,6 @@ export default async function handler(req, res) {
     return
   }
 
-  console.log(
-    '[waitlist:redis:diag] api/waitlist env keys:',
-    Object.keys(process.env).filter((key) => /upstash|redis|kv/i.test(key)),
-  )
-
   const redis = getRedis(process.env)
   if (redis) {
     const allowed = await isRateLimitAllowed(redis, getClientIp(req))
